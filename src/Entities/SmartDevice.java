@@ -2,7 +2,7 @@ package Entities;
 
 import Enums.Mode;
 
-public class SmartDevice {
+abstract class SmartDevice {
 
     private String id;
     private Mode mode;
@@ -52,9 +52,9 @@ public class SmartDevice {
         this.mode = Mode.OFF;
     }
 
-    public SmartDevice clone() {
-        return new SmartDevice(this);
-    }
+   public abstract SmartDevice clone();
+
+    public abstract double consumoEnergetico();
 
     public boolean equals(Object o) {
         if (this == o) return true;

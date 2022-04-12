@@ -42,9 +42,7 @@ public class SmartBulb extends SmartDevice{
     }
 
     public void setTone(Tone t) {
-        if (t.ordinal()>Tone.WARM.ordinal()) this.tone = Tone.WARM;
-        else if (t.ordinal()<Tone.COLD.ordinal()) this.tone = Tone.COLD;
-        else this.tone = t;
+        this.tone = t;
     }
 
     public double getDimension() {
@@ -76,4 +74,18 @@ public class SmartBulb extends SmartDevice{
     public SmartBulb clone() {
         return new SmartBulb(this);
     }
+
+    public double consumoEnergetico(){
+        //tem que implementar
+        return 0;
+    }
+
+    /*
+    TO THINK
+    --------
+    O consumo de energia de uma destas lâmpadas é dado por uma fórmula (a conceber por cada grupo)
+    e que é função de um valor fixo + factor em função do tipo de luz que está a ser emitida
+
+    Onde entra o consumo diário nesta fórmula?
+     */
 }
