@@ -1,6 +1,8 @@
 package Entities;
 
-abstract class SmartDevice {
+import Enums.Mode;
+
+public class SmartDevice {
 
     private String id;
     private Mode mode;
@@ -48,5 +50,16 @@ abstract class SmartDevice {
 
     public void turnOff() {
         this.mode = Mode.OFF;
+    }
+
+    public SmartDevice clone() {
+        return new SmartDevice(this);
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || o.getClass() != this.getClass()) return false;
+        SmartDevice sd = (SmartDevice) o;
+        return ( this.id.equals(sd.getId()) && this.mode == sd.getMode());
     }
 }
