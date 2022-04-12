@@ -2,8 +2,8 @@ package Entities;
 
 public class SmartCamera extends SmartDevice{
 
-    double resolution;
-    double fileSize;
+    int resolution;
+    int fileSize;
 
     public SmartCamera(){
         super();
@@ -17,7 +17,7 @@ public class SmartCamera extends SmartDevice{
         this.resolution = 0;
     }
 
-    public SmartCamera(String s, double r, double f){
+    public SmartCamera(String s, int r, int f){
         super(s);
         this.resolution = r;
         this.fileSize = f;
@@ -29,19 +29,19 @@ public class SmartCamera extends SmartDevice{
         this.resolution = sc.getResolution();
     }
 
-    public double getResolution() {
+    public int getResolution() {
         return resolution;
     }
 
-    public void setResolution(double resolution) {
+    public void setResolution(int resolution) {
         this.resolution = resolution;
     }
 
-    public double getFilesize() {
+    public int getFilesize() {
         return fileSize;
     }
 
-    public void setFilesize(double filesize) {
+    public void setFilesize(int filesize) {
         this.fileSize = filesize;
     }
 
