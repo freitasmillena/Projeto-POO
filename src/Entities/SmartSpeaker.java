@@ -3,6 +3,7 @@ package Entities;
 public class SmartSpeaker extends SmartDevice{
     public static final int MAX = 20; //volume máximo
 
+    //private double consumoBase !!!!!!!!!!!!!!!
     private int volume;
     private String channel;
     private String brand;
@@ -80,17 +81,20 @@ public class SmartSpeaker extends SmartDevice{
     }
 
     public double consumoEnergetico(){
-        //tem que implementar
-        return 0;
+        double inicial = 3.3;
+        double consumo;
+        if(this.volume <= 5){
+            consumo = inicial;
+        }
+        else if(this.volume > 5 && this.volume <=15){
+                consumo = inicial*1.25;
+        }
+        else{
+                consumo = inicial*1.5;
+        }
+        return consumo;
     }
 
-    /*
-    TO THINK
-    --------
-     O consumo diário de cada coluna é também função do consumo diário de colunas daquela marca +
-     factor em função do volume em que a coluna está a tocar.
 
-     Valor fixo de consumo diário para cada marca específica. Como guardar valores para marcas existentes?
-     */
 }
 

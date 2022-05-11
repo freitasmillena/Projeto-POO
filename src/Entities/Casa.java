@@ -10,21 +10,27 @@ public class Casa {
     private String NIF;
     private Map<String, SmartDevice> devices; // identificador -> SmartDevice
     private Map<String, List<String>> locations; // Espaço -> Lista codigo dos devices
+    private String supplier;
+    private double totalInstallationCost;
 
 
     public Casa(){
         this.owner= "";
         this.NIF = "";
+        this.supplier = "";
         this.devices = new HashMap<>();
         this.locations = new HashMap<>();
+        this.totalInstallationCost = 0;
 
     }
 
-    public Casa(String owner, String nif){
+    public Casa(String owner, String nif, String fornecedor, double totalInstallationCost){
         this.owner = owner;
         this.NIF = nif;
         this.devices = new HashMap<>();
         this.locations = new HashMap<>();
+        this.supplier = fornecedor;
+        this.totalInstallationCost = totalInstallationCost;
 
     }
 
@@ -33,11 +39,12 @@ public class Casa {
         this.NIF = casa.getNIF();
         this.devices = casa.getDevices();
         this.locations = casa.getLocations();
+        this.totalInstallationCost = casa.getTotalInstallationCost();
 
     }
 
     public String getOwner() {
-        return owner;
+        return this.owner;
     }
 
     public void setOwner(String owner) {
@@ -45,11 +52,23 @@ public class Casa {
     }
 
     public String getNIF() {
-        return NIF;
+        return this.NIF;
     }
 
     public void setNIF(String NIF) {
         this.NIF = NIF;
+    }
+
+    public String getSupplier(){ return this.supplier;}
+
+    public void setSupplier(String supplier){ this.supplier = supplier;}
+
+    public double getTotalInstallationCost() {
+        return this.totalInstallationCost;
+    }
+
+    public void setTotalInstallationCost(double totalInstallationCost) {
+        this.totalInstallationCost = totalInstallationCost;
     }
 
     public Map<String, SmartDevice> getDevices(){
@@ -114,7 +133,9 @@ public class Casa {
     }
 
     private void addDevice(SmartDevice sd){
+
         this.devices.put(sd.getId(),sd.clone());
+        this.totalInstallationCost += sd.getInstallationCost();
     }
 
     private boolean hasLocation(String location){
@@ -147,5 +168,7 @@ public class Casa {
 
         return result;
     }
+
+
 
 }

@@ -1,7 +1,7 @@
 package Enums;
 
 public enum Tone {
-    COLD,
+    COLD ,
     NEUTRAL,
     WARM
 }

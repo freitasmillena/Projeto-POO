@@ -6,26 +6,31 @@ abstract class SmartDevice {
 
     private String id;
     private Mode mode;
+    private double installationCost;
 
 
     public SmartDevice() {
         this.id = "";
         this.mode = Mode.OFF;
+        this.installationCost = 0;
     }
 
     public SmartDevice(String s) {
         this.id = s;
         this.mode = Mode.OFF;
+        this.installationCost = 0;
     }
 
-    public SmartDevice(String s, Mode m){
+    public SmartDevice(String s, Mode m, double installationCost){
         this.id = s;
         this.mode = m;
+        this.installationCost = installationCost;
     }
 
     public SmartDevice(SmartDevice sm) {
         this.id = sm.getId();
         this.mode = sm.getMode();
+        this.installationCost = sm.getInstallationCost();
     }
 
     public String getId() {
@@ -42,6 +47,14 @@ abstract class SmartDevice {
 
     public void setMode(Mode mode) {
         this.mode = mode;
+    }
+
+    public double getInstallationCost() {
+        return this.installationCost;
+    }
+
+    public void setInstallationCost(double installationCost) {
+        this.installationCost = installationCost;
     }
 
     public void turnOn() {

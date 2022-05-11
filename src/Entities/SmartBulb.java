@@ -76,16 +76,20 @@ public class SmartBulb extends SmartDevice{
     }
 
     public double consumoEnergetico(){
-        //tem que implementar
-        return 0;
+        double valor;
+        switch(this.tone){
+            case COLD:
+                valor = this.consumoDiario*0.15;
+                break;
+            case WARM:
+                valor = this.consumoDiario*0.35;
+                break;
+            default:
+                valor = this.consumoDiario*0.22;
+                break;
+        }
+        return this.consumoDiario + valor;
     }
 
-    /*
-    TO THINK
-    --------
-    O consumo de energia de uma destas lâmpadas é dado por uma fórmula (a conceber por cada grupo)
-    e que é função de um valor fixo + factor em função do tipo de luz que está a ser emitida
 
-    Onde entra o consumo diário nesta fórmula?
-     */
 }
