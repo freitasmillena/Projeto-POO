@@ -2,6 +2,7 @@ package Entities;
 
 import Enums.Mode;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class Casa {
@@ -170,12 +171,11 @@ public class Casa {
         return result;
     }
 
-    public double totalConsumption(){
+    public double totalConsumption(LocalDate fromDate, LocalDate toDate){
         double totalConsumption = 0;
         for(SmartDevice sd : this.devices.values()){
-            if(sd.getMode().equals(Mode.ON)) {
-                totalConsumption += sd.consumoEnergetico();
-            }
+              totalConsumption += sd.totalConsumo(fromDate, toDate);
+
         }
         return totalConsumption;
     }

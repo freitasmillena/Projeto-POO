@@ -2,49 +2,53 @@ package Entities;
 
 import Enums.Mode;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 abstract class SmartDevice {
 
     private String id;
     private Mode mode;
     private double consumptionBase;
-    private Set<Log> logs;
+    private NavigableMap<LocalDate, Mode> logs;
 
     public SmartDevice() {
         this.id = "";
         this.mode = Mode.OFF;
         this.consumptionBase = 0;
-        this.logs = new TreeSet<>();
+        this.logs = new TreeMap<>();
     }
 
     public SmartDevice(String s) {
         this.id = s;
         this.mode = Mode.OFF;
         this.consumptionBase = 0;
-        this.logs = new TreeSet<>();
+        this.logs = new TreeMap<>();
     }
 
-    public SmartDevice(String s, Mode m, double consumptionBase, Set<Log> logs){
+    public SmartDevice(String s, Mode m, double consumptionBase, LocalDate fromDate){
         this.id = s;
         this.mode = m;
         this.consumptionBase = consumptionBase;
-        this.logs = new TreeSet<>();
-        for(Log l : logs){
-            this.logs.add(l.clone());
-        }
+        this.logs = new TreeMap<>();
+        this.logs.put(fromDate, m);
+
     }
 
     public SmartDevice(String s, double consumptionBase){
         this.id = s;
         this.mode = Mode.OFF;
         this.consumptionBase = consumptionBase;
+        this.logs = new TreeMap<>();
     }
 
     public SmartDevice(SmartDevice sm) {
         this.id = sm.getId();
         this.mode = sm.getMode();
+        this.consumptionBase = sm.getConsumptionBase();
     }
 
     public String getId() {
@@ -75,6 +79,11 @@ abstract class SmartDevice {
         this.mode = Mode.OFF;
     }
 
+    public void addLog(LocalDate fromDate, Mode mode){
+
+        this.logs.put(fromDate,mode);
+    }
+
    public abstract SmartDevice clone();
 
     public abstract double consumoEnergetico();
@@ -84,5 +93,43 @@ abstract class SmartDevice {
         if (o == null || o.getClass() != this.getClass()) return false;
         SmartDevice sd = (SmartDevice) o;
         return ( this.id.equals(sd.getId()) && this.mode == sd.getMode());
+    }
+
+    public double totalConsumo(LocalDate fromDate, LocalDate toDate){
+
+        LocalDate inicio = fromDate;
+        LocalDate intermedio =fromDate;
+        Mode mode;
+        long dias = 0;
+
+
+        while(intermedio.compareTo(toDate) < 0) {
+            if (this.logs.containsKey(inicio)) {
+                mode = this.logs.get(inicio);
+
+            }
+            else {
+                Map.Entry<LocalDate, Mode> value = this.logs.lowerEntry(inicio);
+                mode = value.getValue();
+            }
+
+            Map.Entry<LocalDate, Mode> value = this.logs.higherEntry(inicio);
+
+            if(value == null){
+                intermedio = toDate;
+            }
+            else {
+                intermedio = value.getKey();
+            }
+
+            if (mode.equals(Mode.ON)) {
+                    dias += Duration.between(inicio, intermedio).toDays();
+            }
+
+            inicio = intermedio;
+        }
+
+        return consumoEnergetico()*dias;
+
     }
 }

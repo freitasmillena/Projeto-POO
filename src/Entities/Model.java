@@ -57,6 +57,10 @@ public class Model {
         this.fornecedores.put(fornecedor.getSupplier(), fornecedor.clone());
     }
 
+    public double getInstallationCost(String supplier){
+        return this.fornecedores.get(supplier).getInstallationCost();
+    }
+
     public void addInvoice(Invoice invoice){
         this.invoices.put(invoice.getId(),invoice.clone());
     }
@@ -65,11 +69,15 @@ public class Model {
         this.formulas.put(name,formula);
     }
 
+    public FormulaConsumo getFormula(String formula){
+        return this.formulas.get(formula);
+    }
+
     //avançar com a data gera faturas
     public void generateInvoices(LocalDate toDate){
 
         for(Casa casa : this.casas.values()){
-            double consumption = casa.totalConsumption();
+            double consumption = casa.totalConsumption(this.fromDate, toDate);
             Fornecedor fornecedor = this.fornecedores.get(casa.getSupplier());
             double totalCost = fornecedor.invoiceAmount(consumption,this.fromDate,toDate,casa.devicesON(),casa.getTotalInstallationCost());
             addInvoice(new Invoice(this.fromDate + casa.getNIF(), casa.getOwner(), casa.getNIF(), fornecedor.getSupplier(), this.fromDate, toDate, totalCost));
@@ -82,6 +90,12 @@ public class Model {
 
     public void addComand(String command){
         this.commands.add(command);
+    }
+
+    public void printInvoices(){
+        for(Invoice in : this.invoices.values()){
+            System.out.println("Owner: " + in.getOwner() + "Fornecedor: " + in.getSupplier() + "Total: " + in.getTotalCost());
+        }
     }
 
     //percorrer commands e executá-los

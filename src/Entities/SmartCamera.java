@@ -1,5 +1,9 @@
 package Entities;
 
+import Enums.Mode;
+
+import java.time.LocalDate;
+
 public class SmartCamera extends SmartDevice{
 
     private int resolutionX;
@@ -20,8 +24,8 @@ public class SmartCamera extends SmartDevice{
         this.resolutionY = 0;
     }
 
-    public SmartCamera(String s, double consumptionBase, int resolutionX, int resolutionY, int filesize){
-        super(s, consumptionBase);
+    public SmartCamera(String s, double consumptionBase, int resolutionX, int resolutionY, int filesize, Mode mode, LocalDate fromDate){
+        super(s, mode,consumptionBase,fromDate);
         this.resolutionX = resolutionX;
         this.resolutionY = resolutionY;
         this.fileSize = filesize;

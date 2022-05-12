@@ -1,5 +1,9 @@
 package Entities;
 
+import Enums.Mode;
+
+import java.time.LocalDate;
+
 public class SmartSpeaker extends SmartDevice{
     public static final int MAX = 100; //volume máximo
 
@@ -24,9 +28,9 @@ public class SmartSpeaker extends SmartDevice{
     }
 
 
-    public SmartSpeaker(String cod, int consumptionBase, String channel, int volume, String brand) {
+    public SmartSpeaker(String cod, double consumptionBase, String channel, int volume, String brand, Mode mode, LocalDate fromDate) {
         // initialise instance variables
-        super(cod,consumptionBase);
+        super(cod, mode,consumptionBase,fromDate);
         this.channel = channel;
         if(volume>=0 && volume<=MAX) {
             this.volume = volume;

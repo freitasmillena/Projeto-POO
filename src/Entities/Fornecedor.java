@@ -23,7 +23,7 @@ public class Fornecedor {
 
     public Fornecedor(String supplier, FormulaConsumo formulaConsumo, int nFaturas, double installationCost) {
         this.supplier = supplier;
-        this.formulaConsumo = formulaConsumo.clone();
+        this.formulaConsumo = formulaConsumo;
         this.nFaturas = nFaturas;
         this.installationCost = installationCost;
     }
@@ -56,11 +56,11 @@ public class Fornecedor {
     }
 
    public FormulaConsumo getFormulaConsumo() {
-        return this.formulaConsumo.clone();
+        return this.formulaConsumo;
     }
 
     public void setFormulaConsumo(FormulaConsumo formulaConsumo) {
-        this.formulaConsumo = formulaConsumo.clone();
+        this.formulaConsumo = formulaConsumo;
     }
 
     public double getInstallationCost(){ return this.installationCost;}
@@ -86,4 +86,6 @@ public class Fornecedor {
         double consumptionTotal = consumption*DAYS.between(fromDate,toDate);
         return formulaConsumo.calculaTotal(this.taxes,consumptionTotal,this.dailyCost, nDevices) + totalInstallationCost;
     }
+
+
 }

@@ -1,6 +1,9 @@
 package Entities;
 
+import Enums.Mode;
 import Enums.Tone;
+
+import java.time.LocalDate;
 
 public class SmartBulb extends SmartDevice{
     private Tone tone;
@@ -12,8 +15,8 @@ public class SmartBulb extends SmartDevice{
         this.dimension = 0.0;
     }
 
-    public SmartBulb(String id, Tone tone, double consumptionBase, double dimension) {
-        super(id,consumptionBase);
+    public SmartBulb(String id, Tone tone, double consumptionBase, double dimension, Mode mode, LocalDate fromDate) {
+        super(id, mode,consumptionBase, fromDate);
         this.tone = tone;
         this.dimension = dimension;
     }
