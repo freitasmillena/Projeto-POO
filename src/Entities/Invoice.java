@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class Invoice {
 
-    private String id;
+    private int id;
     private String owner;
     private String nif;
     private String supplier;
@@ -13,14 +13,14 @@ public class Invoice {
     private double totalCost;
 
     public Invoice() {
-        this.id = "";
+        this.id = 0;
         this.owner = "";
         this.nif= "";
         this.supplier = "";
         this.totalCost = 0;
     }
 
-    public Invoice(String id, String owner, String nif, String supplier, LocalDate fromDate, LocalDate toDate, double totalCost) {
+    public Invoice(int id, String owner, String nif, String supplier, LocalDate fromDate, LocalDate toDate, double totalCost) {
         this.id = id;
         this.owner = owner;
         this.nif = nif;
@@ -40,11 +40,11 @@ public class Invoice {
         this.totalCost = invoice.getTotalCost();
     }
 
-    public String getId() {
-        return id;
+    public int getId() {
+        return this.id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -104,7 +104,7 @@ public class Invoice {
         if (this == o) return true;
         if (o == null || o.getClass() != this.getClass()) return false;
         Invoice in = (Invoice) o;
-        return (this.id.equals(in.getId()) &&
+        return (this.id == in.getId() &&
                 this.owner.equals(in.getOwner()) &&
                 this.nif.equals(in.getNif()) &&
                 this.supplier.equals(in.getSupplier()) &&

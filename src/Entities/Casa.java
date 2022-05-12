@@ -169,6 +169,23 @@ public class Casa {
         return result;
     }
 
+    public double totalConsumption(){
+        double totalConsumption = 0;
+        for(SmartDevice sd : this.devices.values()){
+            if(sd.getMode().equals(Mode.ON)) {
+                totalConsumption += sd.consumoEnergetico();
+            }
+        }
+        return totalConsumption;
+    }
 
-
+    public int devicesON(){
+        int nDevices = 0;
+        for(SmartDevice sd : this.devices.values()){
+            if(sd.getMode().equals(Mode.ON)) {
+                nDevices ++;
+            }
+        }
+        return nDevices;
+    }
 }

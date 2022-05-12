@@ -12,19 +12,23 @@ public class Fornecedor {
     private final double dailyCost = 2.5;
     private final double taxes = 0.23;
     private FormulaConsumo formulaConsumo;
+    private int nFaturas;
 
     public Fornecedor() {
         this.supplier = "";
+        this.nFaturas = 0;
     }
 
-    public Fornecedor(String supplier, FormulaConsumo formulaConsumo) {
+    public Fornecedor(String supplier, FormulaConsumo formulaConsumo, int nFaturas) {
         this.supplier = supplier;
         this.formulaConsumo = formulaConsumo.clone();
+        this.nFaturas = nFaturas;
     }
 
     public Fornecedor(Fornecedor fornecedor){
         this.supplier = fornecedor.getSupplier();
         this.formulaConsumo = fornecedor.getFormulaConsumo();
+        this.nFaturas = fornecedor.getnFaturas();
     }
 
     public String getSupplier() {
@@ -34,6 +38,10 @@ public class Fornecedor {
     public void setSupplier(String supplier) {
         this.supplier = supplier;
     }
+
+    public int getnFaturas(){ return this.nFaturas;}
+
+    public void setnFaturas(int nFaturas){this.nFaturas = nFaturas;}
 
     public double getDailyCost() {
         return this.dailyCost;
@@ -57,7 +65,8 @@ public class Fornecedor {
         if (o == null || getClass() != o.getClass()) return false;
         Fornecedor f = (Fornecedor) o;
         return (this.supplier.equals(f.supplier) &&
-                this.formulaConsumo.equals(f.getFormulaConsumo()));
+                this.formulaConsumo.equals(f.getFormulaConsumo()) &&
+                this.nFaturas == f.getnFaturas());
     }
 
     public Fornecedor clone(){
