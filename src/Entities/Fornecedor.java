@@ -13,22 +13,26 @@ public class Fornecedor {
     private final double taxes = 0.23;
     private FormulaConsumo formulaConsumo;
     private int nFaturas;
+    private double installationCost;
 
     public Fornecedor() {
         this.supplier = "";
         this.nFaturas = 0;
+        this.installationCost = 0;
     }
 
-    public Fornecedor(String supplier, FormulaConsumo formulaConsumo, int nFaturas) {
+    public Fornecedor(String supplier, FormulaConsumo formulaConsumo, int nFaturas, double installationCost) {
         this.supplier = supplier;
         this.formulaConsumo = formulaConsumo.clone();
         this.nFaturas = nFaturas;
+        this.installationCost = installationCost;
     }
 
     public Fornecedor(Fornecedor fornecedor){
         this.supplier = fornecedor.getSupplier();
         this.formulaConsumo = fornecedor.getFormulaConsumo();
         this.nFaturas = fornecedor.getnFaturas();
+        this.installationCost = fornecedor.getInstallationCost();
     }
 
     public String getSupplier() {
@@ -59,6 +63,9 @@ public class Fornecedor {
         this.formulaConsumo = formulaConsumo.clone();
     }
 
+    public double getInstallationCost(){ return this.installationCost;}
+
+    public void setInstallationCost(double installationCost){this.installationCost = installationCost;}
 
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -66,7 +73,8 @@ public class Fornecedor {
         Fornecedor f = (Fornecedor) o;
         return (this.supplier.equals(f.supplier) &&
                 this.formulaConsumo.equals(f.getFormulaConsumo()) &&
-                this.nFaturas == f.getnFaturas());
+                this.nFaturas == f.getnFaturas() &&
+                this.installationCost == f.getInstallationCost());
     }
 
     public Fornecedor clone(){

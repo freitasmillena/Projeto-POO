@@ -2,35 +2,49 @@ package Entities;
 
 import Enums.Mode;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 abstract class SmartDevice {
 
     private String id;
     private Mode mode;
-    private double installationCost;
-
+    private double consumptionBase;
+    private Set<Log> logs;
 
     public SmartDevice() {
         this.id = "";
         this.mode = Mode.OFF;
-        this.installationCost = 0;
+        this.consumptionBase = 0;
+        this.logs = new TreeSet<>();
     }
 
     public SmartDevice(String s) {
         this.id = s;
         this.mode = Mode.OFF;
-        this.installationCost = 0;
+        this.consumptionBase = 0;
+        this.logs = new TreeSet<>();
     }
 
-    public SmartDevice(String s, Mode m, double installationCost){
+    public SmartDevice(String s, Mode m, double consumptionBase, Set<Log> logs){
         this.id = s;
         this.mode = m;
-        this.installationCost = installationCost;
+        this.consumptionBase = consumptionBase;
+        this.logs = new TreeSet<>();
+        for(Log l : logs){
+            this.logs.add(l.clone());
+        }
+    }
+
+    public SmartDevice(String s, double consumptionBase){
+        this.id = s;
+        this.mode = Mode.OFF;
+        this.consumptionBase = consumptionBase;
     }
 
     public SmartDevice(SmartDevice sm) {
         this.id = sm.getId();
         this.mode = sm.getMode();
-        this.installationCost = sm.getInstallationCost();
     }
 
     public String getId() {
@@ -49,13 +63,9 @@ abstract class SmartDevice {
         this.mode = mode;
     }
 
-    public double getInstallationCost() {
-        return this.installationCost;
-    }
+    public double getConsumptionBase(){ return this.consumptionBase;}
 
-    public void setInstallationCost(double installationCost) {
-        this.installationCost = installationCost;
-    }
+    public void setConsumptionBase(double consumptionBase){ this.consumptionBase = consumptionBase;}
 
     public void turnOn() {
         this.mode = Mode.ON;

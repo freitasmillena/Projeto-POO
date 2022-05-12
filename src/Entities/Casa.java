@@ -40,6 +40,7 @@ public class Casa {
         this.devices = casa.getDevices();
         this.locations = casa.getLocations();
         this.totalInstallationCost = casa.getTotalInstallationCost();
+        this.supplier = casa.getSupplier();
 
     }
 
@@ -132,10 +133,10 @@ public class Casa {
         }
     }
 
-    private void addDevice(SmartDevice sd){
+    private void addDevice(SmartDevice sd, double installationCost){
 
         this.devices.put(sd.getId(),sd.clone());
-        this.totalInstallationCost += sd.getInstallationCost();
+        this.totalInstallationCost += installationCost;
     }
 
     private boolean hasLocation(String location){
@@ -151,13 +152,13 @@ public class Casa {
         }
     }
 
-    public void addDeviceToLocation(String location, SmartDevice sd){
+    public void addDeviceToLocation(String location, SmartDevice sd, double installationCost){
         if(!(hasLocation(location))) {
            addLocation(location);
         }
         this.locations.get(location).add(sd.getId());
 
-        addDevice(sd.clone());
+        addDevice(sd.clone(), installationCost);
     }
 
     public boolean locationHasDevice(String location, String device){

@@ -5,14 +5,16 @@ import java.util.*;
 
 public class Model {
 
-    Map<String, Casa> casas;
-    Map<String, Fornecedor> fornecedores;
-    Map<Integer, Invoice> invoices;
-    Map<String, FormulaConsumo> formulas;
-    List<String> commands;
-    LocalDate fromDate;
+    private Map<String, Casa> casas;
+    private Map<String, Fornecedor> fornecedores;
+    private Map<String, Invoice> invoices;
+    private Map<String, FormulaConsumo> formulas;
+    private List<String> commands;
+    private LocalDate fromDate;
+
 
     public Model (){
+
         this.casas = new HashMap<>();
         this.fornecedores = new HashMap<>();
         this.invoices = new TreeMap<>();
@@ -65,14 +67,15 @@ public class Model {
 
     //avançar com a data gera faturas
     public void generateInvoices(LocalDate toDate){
-        int invoiceID = 1;
+
         for(Casa casa : this.casas.values()){
             double consumption = casa.totalConsumption();
             Fornecedor fornecedor = this.fornecedores.get(casa.getSupplier());
             double totalCost = fornecedor.invoiceAmount(consumption,this.fromDate,toDate,casa.devicesON(),casa.getTotalInstallationCost());
-            addInvoice(new Invoice(invoiceID, casa.getOwner(), casa.getNIF(), fornecedor.getSupplier(), this.fromDate, toDate, totalCost));
+            addInvoice(new Invoice(this.fromDate + casa.getNIF(), casa.getOwner(), casa.getNIF(), fornecedor.getSupplier(), this.fromDate, toDate, totalCost));
             fornecedor.setnFaturas(fornecedor.getnFaturas()+1);
-            invoiceID++;
+            casa.setTotalInstallationCost(0);
+
         }
         setFromDate(toDate);
     }

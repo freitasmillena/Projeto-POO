@@ -1,9 +1,9 @@
 package Entities;
 
 public class SmartSpeaker extends SmartDevice{
-    public static final int MAX = 20; //volume máximo
+    public static final int MAX = 100; //volume máximo
 
-    //private double consumoBase !!!!!!!!!!!!!!!
+
     private int volume;
     private String channel;
     private String brand;
@@ -24,12 +24,12 @@ public class SmartSpeaker extends SmartDevice{
     }
 
 
-    public SmartSpeaker(String cod, String channel, int i, String brand) {
+    public SmartSpeaker(String cod, int consumptionBase, String channel, int volume, String brand) {
         // initialise instance variables
-        super(cod);
+        super(cod,consumptionBase);
         this.channel = channel;
-        if(i>=0 && i<=MAX) {
-            this.volume = i;
+        if(volume>=0 && volume<=MAX) {
+            this.volume = volume;
         }
         else this.volume = 0;
         this.brand = brand;
@@ -81,16 +81,15 @@ public class SmartSpeaker extends SmartDevice{
     }
 
     public double consumoEnergetico(){
-        double inicial = 3.3;
         double consumo;
-        if(this.volume <= 5){
-            consumo = inicial;
+        if(this.volume <= 0.1*MAX){
+            consumo = super.getConsumptionBase();
         }
-        else if(this.volume > 5 && this.volume <=15){
-                consumo = inicial*1.25;
+        else if(this.volume > 0.1*MAX && this.volume <= 0.5*MAX){
+                consumo = super.getConsumptionBase()*1.25;
         }
         else{
-                consumo = inicial*1.5;
+                consumo = super.getConsumptionBase()*1.5;
         }
         return consumo;
     }

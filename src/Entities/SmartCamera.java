@@ -2,39 +2,53 @@ package Entities;
 
 public class SmartCamera extends SmartDevice{
 
-    private double resolution;
+    private int resolutionX;
+    private int resolutionY;
     private double fileSize;
 
     public SmartCamera(){
         super();
         this.fileSize = 0;
-        this.resolution = 0;
+        this.resolutionX = 0;
+        this.resolutionY = 0;
     }
 
     public SmartCamera(String s){
         super(s);
         this.fileSize = 0;
-        this.resolution = 0;
+        this.resolutionX = 0;
+        this.resolutionY = 0;
     }
 
-    public SmartCamera(String s, int r, int f){
-        super(s);
-        this.resolution = r;
-        this.fileSize = f;
+    public SmartCamera(String s, double consumptionBase, int resolutionX, int resolutionY, int filesize){
+        super(s, consumptionBase);
+        this.resolutionX = resolutionX;
+        this.resolutionY = resolutionY;
+        this.fileSize = filesize;
     }
 
     public SmartCamera(SmartCamera sc){
         super(sc);
         this.fileSize = sc.getFilesize();
-        this.resolution = sc.getResolution();
+        this.resolutionX = sc.getResolutionX();
+        this.resolutionY = sc.getResolutionY();
+
     }
 
-    public double getResolution() {
-        return resolution;
+    public int getResolutionX() {
+        return resolutionX;
     }
 
-    public void setResolution(double resolution) {
-        this.resolution = resolution;
+    public void setResolutionX(int resolution) {
+        this.resolutionX = resolution;
+    }
+
+    public int getResolutionY() {
+        return resolutionY;
+    }
+
+    public void setResolutionY(int resolution) {
+        this.resolutionY = resolution;
     }
 
     public double getFilesize() {
@@ -54,11 +68,13 @@ public class SmartCamera extends SmartDevice{
         if (o == null || o.getClass() != this.getClass()) return false;
         SmartCamera sc = (SmartCamera) o;
         return (super.equals(sc) &&
-                this.resolution == sc.getResolution() &&
+                this.resolutionX == sc.getResolutionX() &&
+                this.resolutionY == sc.getResolutionY() &&
                 this.fileSize == sc.getFilesize());
     }
 
     public double consumoEnergetico(){
-        return this.fileSize * this.resolution;
+        double resolution = (double) (this.resolutionX/this.resolutionY)*0.001;
+        return this.fileSize * super.getConsumptionBase() * resolution;
     }
 }

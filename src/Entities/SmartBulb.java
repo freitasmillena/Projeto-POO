@@ -5,19 +5,16 @@ import Enums.Tone;
 public class SmartBulb extends SmartDevice{
     private Tone tone;
     private double dimension;
-    private double consumoDiario;
 
     public SmartBulb(){
         super();
         this.tone = Tone.NEUTRAL;
-        this.consumoDiario = 0.0;
         this.dimension = 0.0;
     }
 
-    public SmartBulb(String id, Tone tone, double consumoDiario, double dimension) {
-        super(id);
+    public SmartBulb(String id, Tone tone, double consumptionBase, double dimension) {
+        super(id,consumptionBase);
         this.tone = tone;
-        this.consumoDiario = consumoDiario;
         this.dimension = dimension;
     }
 
@@ -25,7 +22,6 @@ public class SmartBulb extends SmartDevice{
         // initialise instance variables
         super(id);
         this.tone = Tone.NEUTRAL;
-        this.consumoDiario = 0.0;
         this.dimension = 0.0;
     }
 
@@ -33,7 +29,6 @@ public class SmartBulb extends SmartDevice{
         // initialise instance variables
         super(sb);
         this.tone = sb.getTone();
-        this.consumoDiario = sb.getConsumoDiario();
         this.dimension = sb.getDimension();
     }
 
@@ -53,22 +48,13 @@ public class SmartBulb extends SmartDevice{
         this.dimension = dimension;
     }
 
-    public double getConsumoDiario() {
-        return consumoDiario;
-    }
-
-    public void setConsumoDiario(double consumoDiario) {
-        this.consumoDiario = consumoDiario;
-    }
-
-    public boolean equals(Object o) {
+        public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || o.getClass() != this.getClass()) return false;
         SmartBulb sb = (SmartBulb) o;
         return (super.equals(sb) &&
                 this.tone == sb.getTone() &&
-                this.dimension == sb.getDimension() &&
-                this.consumoDiario == sb.getConsumoDiario());
+                this.dimension == sb.getDimension());
     }
 
     public SmartBulb clone() {
@@ -79,16 +65,16 @@ public class SmartBulb extends SmartDevice{
         double valor;
         switch(this.tone){
             case COLD:
-                valor = this.consumoDiario*0.15;
+                valor = super.getConsumptionBase()*0.15;
                 break;
             case WARM:
-                valor = this.consumoDiario*0.35;
+                valor = super.getConsumptionBase()*0.35;
                 break;
             default:
-                valor = this.consumoDiario*0.22;
+                valor = super.getConsumptionBase()*0.22;
                 break;
         }
-        return this.consumoDiario + valor;
+        return super.getConsumptionBase() + valor;
     }
 
 
