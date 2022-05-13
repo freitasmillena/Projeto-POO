@@ -15,19 +15,30 @@ public class Fornecedor {
     private int nFaturas;
     private double installationCost;
 
+    //Construtor vazio
     public Fornecedor() {
         this.supplier = "";
         this.nFaturas = 0;
         this.installationCost = 0;
     }
 
-    public Fornecedor(String supplier, FormulaConsumo formulaConsumo, int nFaturas, double installationCost) {
+    //Construtor nome, formula, installationCost
+    public Fornecedor(String supplier, FormulaConsumo formulaConsumo, double installationCost) {
         this.supplier = supplier;
         this.formulaConsumo = formulaConsumo;
-        this.nFaturas = nFaturas;
+        this.nFaturas = 0;
         this.installationCost = installationCost;
     }
 
+    //Construtor sem formula
+    public Fornecedor(String supplier, double installationCost) {
+        this.supplier = supplier;
+        this.formulaConsumo = null;
+        this.nFaturas = 0;
+        this.installationCost = installationCost;
+    }
+
+    //Construtor de cópia
     public Fornecedor(Fornecedor fornecedor){
         this.supplier = fornecedor.getSupplier();
         this.formulaConsumo = fornecedor.getFormulaConsumo();
@@ -35,6 +46,7 @@ public class Fornecedor {
         this.installationCost = fornecedor.getInstallationCost();
     }
 
+    //Getters e Setters
     public String getSupplier() {
         return this.supplier;
     }
@@ -67,6 +79,7 @@ public class Fornecedor {
 
     public void setInstallationCost(double installationCost){this.installationCost = installationCost;}
 
+    //Equals
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -77,10 +90,12 @@ public class Fornecedor {
                 this.installationCost == f.getInstallationCost());
     }
 
+    //Clone
     public Fornecedor clone(){
         return new Fornecedor(this);
     }
 
+    //Calcula valor da fatura de acordo com sua fórmula de cálculo
     public double invoiceAmount(double consumption, LocalDate fromDate, LocalDate toDate, double nDevices, double totalInstallationCost){
 
         return formulaConsumo.calculaTotal(this.taxes,consumption,this.dailyCost, nDevices) + totalInstallationCost;

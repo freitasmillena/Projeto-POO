@@ -6,12 +6,11 @@ import java.time.LocalDate;
 
 public class SmartSpeaker extends SmartDevice{
     public static final int MAX = 100; //volume máximo
-
-
     private int volume;
     private String channel;
     private String brand;
 
+    //Construtor vazio
     public SmartSpeaker() {
         // initialise instance variables
         super();
@@ -19,15 +18,7 @@ public class SmartSpeaker extends SmartDevice{
         this.channel = "";
     }
 
-    public SmartSpeaker(String s) {
-        // initialise instance variables
-        super(s);
-        this.volume = 0;
-        this.channel = "";
-        this.brand = "";
-    }
-
-
+   //Construtor completo
     public SmartSpeaker(String cod, double consumptionBase, String channel, int volume, String brand, Mode mode, LocalDate fromDate) {
         // initialise instance variables
         super(cod, mode,consumptionBase,fromDate);
@@ -39,6 +30,19 @@ public class SmartSpeaker extends SmartDevice{
         this.brand = brand;
     }
 
+    //Construtor sem Mode
+    public SmartSpeaker(String cod, double consumptionBase, String channel, int volume, String brand, LocalDate fromDate) {
+        // initialise instance variables
+        super(cod,consumptionBase,fromDate);
+        this.channel = channel;
+        if(volume>=0 && volume<=MAX) {
+            this.volume = volume;
+        }
+        else this.volume = 0;
+        this.brand = brand;
+    }
+
+    //Construtor de cópia
     public SmartSpeaker(SmartSpeaker s){
         super(s);
         this.channel = s.getChannel();
@@ -46,9 +50,12 @@ public class SmartSpeaker extends SmartDevice{
         this.brand = s.getBrand();
     }
 
+    //Getters e Setters
     public int getVolume() {
         return volume;
     }
+
+    public void setVolume(int volume) {this.volume = volume;}
 
     public String getChannel() {
         return channel;
@@ -66,10 +73,12 @@ public class SmartSpeaker extends SmartDevice{
         this.brand = brand;
     }
 
+    //Clone
     public SmartSpeaker clone(){
         return new SmartSpeaker(this);
     }
 
+    //Equals
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || o.getClass() != this.getClass()) return false;
@@ -80,10 +89,12 @@ public class SmartSpeaker extends SmartDevice{
                 this.brand.equals(s.getBrand()));
     }
 
+    //Mudar volume por porcentagem
     public void setPercentageVolume(int percentage){ //hey siri 30% volume :))
         this.volume = percentage * MAX;
     }
 
+    //Calcular consumo energético de um smartspeaker
     public double consumoEnergetico(){
         double consumo;
         if(this.volume <= 0.1*MAX){

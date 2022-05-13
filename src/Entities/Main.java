@@ -16,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException{
 
-        Controller.run();
+        /*Controller.run();
 
         Model model = new Model();
         model.setFromDate(LocalDate.parse("2022-05-12"));
@@ -25,12 +25,12 @@ public class Main {
         model.addFormula("EDP", new Formula2());
         model.addFormula("GoldEnergy",  new Formula3());
 
-        model.addFornecedor(new Fornecedor("Luzboa", model.getFormula("LuzBoa"), 0, 2.5));
-        model.addFornecedor(new Fornecedor("EDP", model.getFormula("EDP"), 0, 2));
-        model.addFornecedor(new Fornecedor("GoldEnergy", model.getFormula("GoldEnergy"), 0, 3));
+        model.addFornecedor(new Fornecedor("Luzboa", model.getFormula("LuzBoa"), 2.5));
+        model.addFornecedor(new Fornecedor("EDP", model.getFormula("EDP"), 2));
+        model.addFornecedor(new Fornecedor("GoldEnergy", model.getFormula("GoldEnergy"), 3));
 
-        //String id, Tone tone, double consumptionBase, double dimension
-        Casa c1 = new Casa("Millena", "1234", "Luzboa", 0);
+        String id, Tone tone, double consumptionBase, double dimension
+        Casa c1 = new Casa("Millena", "1234", "Luzboa");
         c1.addLocation("Quarto");
         c1.addLocation("Sala");
         SmartBulb sb = new SmartBulb("lampada1", Tone.COLD, 1.57, 3.57,  Mode.ON, LocalDate.parse("2022-05-12"));
@@ -39,7 +39,7 @@ public class Main {
         c1.addDeviceToLocation("Sala", new SmartBulb("lampada2", Tone.WARM, 1.57, 3.57,  Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
 
         model.addCasa(c1);
-        Casa c2 = new Casa("Rafael", "4567", "EDP", 0 );
+        Casa c2 = new Casa("Rafael", "4567", "EDP" );
 
         c2.addLocation("Cozinha");
         c2.addLocation("Jardim");
@@ -48,7 +48,7 @@ public class Main {
 
         model.addCasa(c2);
 
-        Casa c3 = new Casa("Alice", "8910", "GoldEnergy", 0 );
+        Casa c3 = new Casa("Alice", "8910", "GoldEnergy");
 
         c3.addLocation("Banheiro");
         c3.addLocation("Quarto");
@@ -60,7 +60,7 @@ public class Main {
 
         model.printInvoices();
 
-        /*
+
         String cod, int consumptionBase, String channel, int volume, String brand
         SortedMap<LocalDate, Log> logs = new TreeMap<LocalDate, Log>();
         logs.put(LocalDate.parse("2022-05-12"), new Log(LocalDate.parse("2022-05-12"), Mode.ON));

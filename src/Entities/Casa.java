@@ -1,5 +1,8 @@
 package Entities;
 
+import Entities.Exceptions.DateAlreadyExistsException;
+import Entities.Exceptions.LocationAlreadyExists;
+import Entities.Exceptions.LocationDoesntExist;
 import Enums.Mode;
 
 import java.time.LocalDate;
@@ -14,7 +17,7 @@ public class Casa {
     private String supplier;
     private double totalInstallationCost;
 
-
+    //Construtor vazio
     public Casa(){
         this.owner= "";
         this.NIF = "";
@@ -25,16 +28,18 @@ public class Casa {
 
     }
 
-    public Casa(String owner, String nif, String fornecedor, double totalInstallationCost){
+    //Construtor completo
+    public Casa(String owner, String nif, String fornecedor){
         this.owner = owner;
         this.NIF = nif;
         this.devices = new HashMap<>();
         this.locations = new HashMap<>();
         this.supplier = fornecedor;
-        this.totalInstallationCost = totalInstallationCost;
+        this.totalInstallationCost = 0;
 
     }
 
+    //Construtor de cópia
     public Casa(Casa casa){
         this.owner = casa.getOwner();
         this.NIF = casa.getNIF();
@@ -45,6 +50,7 @@ public class Casa {
 
     }
 
+    //Getters e Setters
     public String getOwner() {
         return this.owner;
     }
@@ -83,17 +89,7 @@ public class Casa {
         return result;
     }
 
-    public List<String> getDevicesFromLocation(String location){
-        List<String> result = new ArrayList<>();
-
-        for(String s: this.locations.get(location)){
-            result.add(s);
-        }
-
-        return result;
-    }
-
-    public Map<String, List<String>> getLocations(){
+    public Map<String, List<String>> getLocations() {
         Map<String, List<String>> result = new HashMap<>();
 
         for(String location : this.locations.keySet()){
@@ -103,10 +99,25 @@ public class Casa {
         return result;
     }
 
+    //Retorna lista de dispositivos de um cómodo da Casa
+    public List<String> getDevicesFromLocation(String location){
+
+        List<String> result = new ArrayList<>();
+
+        for(String s: this.locations.get(location)){
+            result.add(s);
+        }
+
+        return result;
+    }
+
+
+    //Clone
     public Casa  clone(){
         return new Casa(this);
     }
 
+    //Equals
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -114,63 +125,69 @@ public class Casa {
         return (this.owner.equals(casa.getOwner()) &&
                 this.NIF.equals(casa.getNIF()) &&
                 this.devices.equals(casa.getDevices()) &&
-                this.locations.equals(casa.getLocations()));
+                this.locations.equals(casa.getLocations()) &&
+                this.supplier.equals(casa.getSupplier()) &&
+                this.totalInstallationCost == casa.getTotalInstallationCost());
     }
 
-    public void setMode(String s, Mode mode, LocalDate fromDate){
+    //Mudar o modo de um dispositivo "s"
+    public void setMode(String s, Mode mode, LocalDate fromDate) throws DateAlreadyExistsException {
         this.devices.get(s).addLog(fromDate, mode);
     }
 
-    public void setAllMode(Mode mode, LocalDate fromDate) {
+    //Mudar o modo de todos os dispositivos da casa
+    public void setAllMode(Mode mode, LocalDate fromDate) throws DateAlreadyExistsException {
         for(SmartDevice sm : this.devices.values()){
             sm.addLog(fromDate, mode);
         }
     }
 
-    public void setAllModeLocation(String location, Mode mode, LocalDate fromDate){
-
+    //Mudar o modo de todos os dispositivos de um cómodo
+    public void setAllModeLocation(String location, Mode mode, LocalDate fromDate) throws DateAlreadyExistsException, LocationDoesntExist {
+        if(!hasLocation(location)){
+            throw new LocationDoesntExist("This location: " + location + " doesnt exist.");
+        }
         for(String devices : this.locations.get(location)){
             this.devices.get(devices).addLog(fromDate, mode);
         }
     }
 
-    private void addDevice(SmartDevice sd, double installationCost){
-
+    //Adiciona dispositivo na casa
+    private void addDevice(SmartDevice sd, double installationCost) throws DateAlreadyExistsException{
+        if(this.devices.containsKey(sd.getId())){
+            throw new DateAlreadyExistsException("This device " + sd.getId() + "already exists.");
+        }
         this.devices.put(sd.getId(),sd.clone());
         this.totalInstallationCost += installationCost;
     }
 
+    //Verificar se localização existe
     private boolean hasLocation(String location){
         return this.locations.containsKey(location);
     }
 
-    public void addLocation(String location){
+    //Adicionar localização
+    public void addLocation(String location) throws LocationAlreadyExists {
         if(hasLocation(location)){
-            // tratamento de exceção -> divisão já existe
+           throw new LocationAlreadyExists("This location: " + location + " already exists.");
         }
         else {
             this.locations.put(location, new ArrayList<>());
         }
     }
 
-    public void addDeviceToLocation(String location, SmartDevice sd, double installationCost){
-        if(!(hasLocation(location))) {
-           addLocation(location);
+    //Adicionar um dispositivo a um cómodo
+    public void addDeviceToLocation(String location, SmartDevice sd, double installationCost) throws DateAlreadyExistsException, LocationDoesntExist{
+        if(!hasLocation(location)){
+            throw new LocationDoesntExist("This location: " + location + " doesnt exist.");
         }
+
         this.locations.get(location).add(sd.getId());
 
         addDevice(sd.clone(), installationCost);
     }
 
-    public boolean locationHasDevice(String location, String device){
-        boolean result = false;
-        if(hasLocation(location)) {
-            result = this.locations.get(location).contains(device);
-        }
-
-        return result;
-    }
-
+    //Calcular consumo total da casa
     public double totalConsumption(LocalDate fromDate, LocalDate toDate){
         double totalConsumption = 0;
         for(SmartDevice sd : this.devices.values()){

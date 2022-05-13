@@ -10,6 +10,7 @@ public class SmartCamera extends SmartDevice{
     private int resolutionY;
     private double fileSize;
 
+    //Construtor vazio
     public SmartCamera(){
         super();
         this.fileSize = 0;
@@ -17,13 +18,7 @@ public class SmartCamera extends SmartDevice{
         this.resolutionY = 0;
     }
 
-    public SmartCamera(String s){
-        super(s);
-        this.fileSize = 0;
-        this.resolutionX = 0;
-        this.resolutionY = 0;
-    }
-
+    //Construtor completo
     public SmartCamera(String s, double consumptionBase, int resolutionX, int resolutionY, int filesize, Mode mode, LocalDate fromDate){
         super(s, mode,consumptionBase,fromDate);
         this.resolutionX = resolutionX;
@@ -31,6 +26,15 @@ public class SmartCamera extends SmartDevice{
         this.fileSize = filesize;
     }
 
+    //Construtor sem Mode e Tone
+    public SmartCamera(String s, double consumptionBase, int resolutionX, int resolutionY, int filesize, LocalDate fromDate){
+        super(s, consumptionBase,fromDate);
+        this.resolutionX = resolutionX;
+        this.resolutionY = resolutionY;
+        this.fileSize = filesize;
+    }
+
+    //Construtor de cópia
     public SmartCamera(SmartCamera sc){
         super(sc);
         this.fileSize = sc.getFilesize();
@@ -39,6 +43,7 @@ public class SmartCamera extends SmartDevice{
 
     }
 
+    //Getters e Setters
     public int getResolutionX() {
         return resolutionX;
     }
@@ -63,10 +68,12 @@ public class SmartCamera extends SmartDevice{
         this.fileSize = filesize;
     }
 
+    //Clone
     public SmartCamera clone(){
         return new SmartCamera(this);
     }
 
+    //Equals
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || o.getClass() != this.getClass()) return false;
@@ -77,8 +84,9 @@ public class SmartCamera extends SmartDevice{
                 this.fileSize == sc.getFilesize());
     }
 
+    //Consumo energético para câmera
     public double consumoEnergetico(){
-        double resolution = (double) (this.resolutionX/this.resolutionY)*0.001;
+        double resolution = (double) (this.resolutionX/this.resolutionY)*0.01;
         return this.fileSize * super.getConsumptionBase() * resolution;
     }
 }
