@@ -83,8 +83,7 @@ public class Fornecedor {
 
     public double invoiceAmount(double consumption, LocalDate fromDate, LocalDate toDate, double nDevices, double totalInstallationCost){
 
-        double consumptionTotal = consumption*DAYS.between(fromDate,toDate);
-        return formulaConsumo.calculaTotal(this.taxes,consumptionTotal,this.dailyCost, nDevices) + totalInstallationCost;
+        return formulaConsumo.calculaTotal(this.taxes,consumption,this.dailyCost, nDevices) + totalInstallationCost;
     }
 
 

@@ -28,11 +28,12 @@ public class Main {
         Casa c1 = new Casa("Millena", "1234", "Luzboa", 0);
         c1.addLocation("Quarto");
         c1.addLocation("Sala");
-        c1.addDeviceToLocation("Quarto", new SmartBulb("lampada1", Tone.COLD, 1.57, 3.57,  Mode.ON, LocalDate.parse("2022-05-12") ), model.getInstallationCost(c1.getSupplier()));
+        SmartBulb sb = new SmartBulb("lampada1", Tone.COLD, 1.57, 3.57,  Mode.ON, LocalDate.parse("2022-05-12"));
+
+        c1.addDeviceToLocation("Quarto",new SmartBulb("lampada1", Tone.COLD, 1.57, 3.57,  Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
         c1.addDeviceToLocation("Sala", new SmartBulb("lampada2", Tone.WARM, 1.57, 3.57,  Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
 
         model.addCasa(c1);
-
         Casa c2 = new Casa("Rafael", "4567", "EDP", 0 );
 
         c2.addLocation("Cozinha");
@@ -50,7 +51,6 @@ public class Main {
         c3.addDeviceToLocation("Quarto", new SmartSpeaker("siri", 2.53, "AM O DIA", 35, "Sony", Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
 
         model.addCasa(c3);
-
         model.generateInvoices(LocalDate.parse("2022-05-15"));
 
         model.printInvoices();

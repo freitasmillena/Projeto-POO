@@ -4,7 +4,6 @@ import Enums.Mode;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -13,7 +12,7 @@ abstract class SmartDevice {
     private String id;
     private Mode mode;
     private double consumptionBase;
-    private NavigableMap<LocalDate, Mode> logs;
+    private NavigableMap<LocalDate, Integer> logs;
 
     public SmartDevice() {
         this.id = "";
@@ -34,9 +33,11 @@ abstract class SmartDevice {
         this.mode = m;
         this.consumptionBase = consumptionBase;
         this.logs = new TreeMap<>();
-        this.logs.put(fromDate, m);
+        this.logs.put(fromDate,1);
 
     }
+
+
 
     public SmartDevice(String s, double consumptionBase){
         this.id = s;
@@ -49,6 +50,7 @@ abstract class SmartDevice {
         this.id = sm.getId();
         this.mode = sm.getMode();
         this.consumptionBase = sm.getConsumptionBase();
+        this.logs = sm.getLogs();
     }
 
     public String getId() {
@@ -79,9 +81,18 @@ abstract class SmartDevice {
         this.mode = Mode.OFF;
     }
 
-    public void addLog(LocalDate fromDate, Mode mode){
+    public void addLog(LocalDate fromDate, int mode){
 
         this.logs.put(fromDate,mode);
+    }
+
+   public NavigableMap<LocalDate, Integer> getLogs(){
+        NavigableMap<LocalDate, Integer> result = new TreeMap<>();
+
+        for(LocalDate date : this.logs.keySet()){
+            result.put(date, this.logs.get(date));
+        }
+        return result;
     }
 
    public abstract SmartDevice clone();
@@ -99,8 +110,9 @@ abstract class SmartDevice {
 
         LocalDate inicio = fromDate;
         LocalDate intermedio =fromDate;
-        Mode mode;
-        long dias = 0;
+        int mode;
+        int dias = 0;
+        double total = consumoEnergetico();
 
 
         while(intermedio.compareTo(toDate) < 0) {
@@ -109,11 +121,11 @@ abstract class SmartDevice {
 
             }
             else {
-                Map.Entry<LocalDate, Mode> value = this.logs.lowerEntry(inicio);
+                Map.Entry<LocalDate, Integer> value = this.logs.lowerEntry(inicio);
                 mode = value.getValue();
             }
 
-            Map.Entry<LocalDate, Mode> value = this.logs.higherEntry(inicio);
+            Map.Entry<LocalDate, Integer> value = this.logs.higherEntry(inicio);
 
             if(value == null){
                 intermedio = toDate;
@@ -122,14 +134,17 @@ abstract class SmartDevice {
                 intermedio = value.getKey();
             }
 
-            if (mode.equals(Mode.ON)) {
-                    dias += Duration.between(inicio, intermedio).toDays();
+            if (mode == 1) {
+                    dias += ChronoUnit.DAYS.between(inicio,intermedio);
             }
 
             inicio = intermedio;
+
+
         }
 
-        return consumoEnergetico()*dias;
+
+        return total;
 
     }
 }

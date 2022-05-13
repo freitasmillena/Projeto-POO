@@ -174,9 +174,11 @@ public class Casa {
     public double totalConsumption(LocalDate fromDate, LocalDate toDate){
         double totalConsumption = 0;
         for(SmartDevice sd : this.devices.values()){
+
               totalConsumption += sd.totalConsumo(fromDate, toDate);
 
         }
+
         return totalConsumption;
     }
 
