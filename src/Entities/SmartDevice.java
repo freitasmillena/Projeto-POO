@@ -84,6 +84,7 @@ abstract class SmartDevice {
         }
 
         this.logs.put(fromDate,mode);
+
     }
 
    //Get logs
@@ -116,24 +117,26 @@ abstract class SmartDevice {
         while(intermedio.compareTo(toDate) < 0) {
             if (this.logs.containsKey(inicio)) {
                 mode = this.logs.get(inicio);
-
             }
             else {
                 Map.Entry<LocalDate, Mode> value = this.logs.lowerEntry(inicio);
                 mode = value.getValue();
+
             }
 
             Map.Entry<LocalDate, Mode> value = this.logs.higherEntry(inicio);
 
             if(value == null){
                 intermedio = toDate;
+
             }
             else {
                 intermedio = value.getKey();
+
             }
 
             if (mode.equals(Mode.ON)) {
-                    dias += ChronoUnit.DAYS.between(inicio,intermedio);
+                dias += ChronoUnit.DAYS.between(inicio,intermedio);
             }
 
             inicio = intermedio;
@@ -141,7 +144,7 @@ abstract class SmartDevice {
 
         }
 
-
+        total *= dias;
         return total;
 
     }

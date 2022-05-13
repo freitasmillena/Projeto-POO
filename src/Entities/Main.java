@@ -5,18 +5,12 @@ import Enums.Tone;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
-import java.time.chrono.ChronoLocalDate;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import Controller.Controller;
 
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException{
 
-        /*Controller.run();
+        //Controller.run();
 
         Model model = new Model();
         model.setFromDate(LocalDate.parse("2022-05-12"));
@@ -25,20 +19,55 @@ public class Main {
         model.addFormula("EDP", new Formula2());
         model.addFormula("GoldEnergy",  new Formula3());
 
-        model.addFornecedor(new Fornecedor("Luzboa", model.getFormula("LuzBoa"), 2.5));
-        model.addFornecedor(new Fornecedor("EDP", model.getFormula("EDP"), 2));
-        model.addFornecedor(new Fornecedor("GoldEnergy", model.getFormula("GoldEnergy"), 3));
+        try {
+            model.addFornecedor(new Fornecedor("Luzboa", model.getFormula("LuzBoa"), 2.5));
+            model.addFornecedor(new Fornecedor("EDP", model.getFormula("EDP"), 2));
+            model.addFornecedor(new Fornecedor("GoldEnergy", model.getFormula("GoldEnergy"), 3));
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
 
-        String id, Tone tone, double consumptionBase, double dimension
+
+        //String id, Tone tone, double consumptionBase, double dimension
         Casa c1 = new Casa("Millena", "1234", "Luzboa");
-        c1.addLocation("Quarto");
-        c1.addLocation("Sala");
+        try {
+            c1.addLocation("Quarto");
+            c1.addLocation("Sala");
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+
         SmartBulb sb = new SmartBulb("lampada1", Tone.COLD, 1.57, 3.57,  Mode.ON, LocalDate.parse("2022-05-12"));
 
-        c1.addDeviceToLocation("Quarto",new SmartBulb("lampada1", Tone.COLD, 1.57, 3.57,  Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
-        c1.addDeviceToLocation("Sala", new SmartBulb("lampada2", Tone.WARM, 1.57, 3.57,  Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
+        try {
+            c1.addDeviceToLocation("Quarto", new SmartBulb("lampada1", Tone.COLD, 1.57, 3.57, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
+            c1.addDeviceToLocation("Sala", new SmartBulb("lampada2", Tone.WARM, 1.57, 3.57, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
 
-        model.addCasa(c1);
+        try {
+            model.addCasa(c1);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+
+
+
+
+
+
+
+        model.generateInvoices(LocalDate.parse("2022-05-15"));
+
+        model.printInvoices();
+
+        /*
+
         Casa c2 = new Casa("Rafael", "4567", "EDP" );
 
         c2.addLocation("Cozinha");
