@@ -3,15 +3,20 @@ package Entities;
 import Enums.Mode;
 import Enums.Tone;
 
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import Controller.Controller;
+
 public class Main {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws FileNotFoundException{
+
+        Controller.run();
 
         Model model = new Model();
         model.setFromDate(LocalDate.parse("2022-05-12"));
