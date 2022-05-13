@@ -10,45 +10,37 @@ import java.util.*;
 abstract class SmartDevice {
 
     private String id;
-    private Mode mode;
     private double consumptionBase;
-    private NavigableMap<LocalDate, Integer> logs;
+    private NavigableMap<LocalDate, Mode> logs;
 
     public SmartDevice() {
         this.id = "";
-        this.mode = Mode.OFF;
         this.consumptionBase = 0;
         this.logs = new TreeMap<>();
     }
 
     public SmartDevice(String s) {
         this.id = s;
-        this.mode = Mode.OFF;
         this.consumptionBase = 0;
         this.logs = new TreeMap<>();
     }
 
     public SmartDevice(String s, Mode m, double consumptionBase, LocalDate fromDate){
         this.id = s;
-        this.mode = m;
         this.consumptionBase = consumptionBase;
         this.logs = new TreeMap<>();
-        this.logs.put(fromDate,1);
+        this.logs.put(fromDate,m);
 
     }
 
-
-
     public SmartDevice(String s, double consumptionBase){
         this.id = s;
-        this.mode = Mode.OFF;
         this.consumptionBase = consumptionBase;
         this.logs = new TreeMap<>();
     }
 
     public SmartDevice(SmartDevice sm) {
         this.id = sm.getId();
-        this.mode = sm.getMode();
         this.consumptionBase = sm.getConsumptionBase();
         this.logs = sm.getLogs();
     }
@@ -61,38 +53,28 @@ abstract class SmartDevice {
         this.id = id;
     }
 
-    public Mode getMode() {
-        return mode;
-    }
-
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
-
-    public double getConsumptionBase(){ return this.consumptionBase;}
+      public double getConsumptionBase(){ return this.consumptionBase;}
 
     public void setConsumptionBase(double consumptionBase){ this.consumptionBase = consumptionBase;}
 
-    public void turnOn() {
-        this.mode = Mode.ON;
-    }
 
-    public void turnOff() {
-        this.mode = Mode.OFF;
-    }
-
-    public void addLog(LocalDate fromDate, int mode){
+    public void addLog(LocalDate fromDate, Mode mode){
 
         this.logs.put(fromDate,mode);
     }
 
-   public NavigableMap<LocalDate, Integer> getLogs(){
-        NavigableMap<LocalDate, Integer> result = new TreeMap<>();
+   public NavigableMap<LocalDate, Mode> getLogs(){
+        NavigableMap<LocalDate, Mode> result = new TreeMap<>();
 
         for(LocalDate date : this.logs.keySet()){
             result.put(date, this.logs.get(date));
         }
         return result;
+    }
+
+   public Mode lastRecentMode(){
+        Map.Entry<LocalDate, Mode> last = this.logs.lastEntry();
+        return last.getValue();
     }
 
    public abstract SmartDevice clone();
@@ -103,14 +85,16 @@ abstract class SmartDevice {
         if (this == o) return true;
         if (o == null || o.getClass() != this.getClass()) return false;
         SmartDevice sd = (SmartDevice) o;
-        return ( this.id.equals(sd.getId()) && this.mode == sd.getMode());
+        return ( this.id.equals(sd.getId()) &&
+                this.consumptionBase == sd.getConsumptionBase() &&
+                this.logs.equals(sd.getLogs()));
     }
 
     public double totalConsumo(LocalDate fromDate, LocalDate toDate){
 
         LocalDate inicio = fromDate;
         LocalDate intermedio =fromDate;
-        int mode;
+        Mode mode;
         int dias = 0;
         double total = consumoEnergetico();
 
@@ -121,11 +105,11 @@ abstract class SmartDevice {
 
             }
             else {
-                Map.Entry<LocalDate, Integer> value = this.logs.lowerEntry(inicio);
+                Map.Entry<LocalDate, Mode> value = this.logs.lowerEntry(inicio);
                 mode = value.getValue();
             }
 
-            Map.Entry<LocalDate, Integer> value = this.logs.higherEntry(inicio);
+            Map.Entry<LocalDate, Mode> value = this.logs.higherEntry(inicio);
 
             if(value == null){
                 intermedio = toDate;
@@ -134,7 +118,7 @@ abstract class SmartDevice {
                 intermedio = value.getKey();
             }
 
-            if (mode == 1) {
+            if (mode.equals(Mode.ON)) {
                     dias += ChronoUnit.DAYS.between(inicio,intermedio);
             }
 

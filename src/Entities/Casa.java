@@ -117,20 +117,20 @@ public class Casa {
                 this.locations.equals(casa.getLocations()));
     }
 
-    public void setMode(String s, Mode mode){
-        this.devices.get(s).setMode(mode);
+    public void setMode(String s, Mode mode, LocalDate fromDate){
+        this.devices.get(s).addLog(fromDate, mode);
     }
 
-    public void setAllMode(Mode mode) {
+    public void setAllMode(Mode mode, LocalDate fromDate) {
         for(SmartDevice sm : this.devices.values()){
-            sm.setMode(mode);
+            sm.addLog(fromDate, mode);
         }
     }
 
-    public void setAllLocation(String location, Mode mode){
+    public void setAllModeLocation(String location, Mode mode, LocalDate fromDate){
 
         for(String devices : this.locations.get(location)){
-            this.devices.get(devices).setMode(mode);
+            this.devices.get(devices).addLog(fromDate, mode);
         }
     }
 
@@ -185,7 +185,7 @@ public class Casa {
     public int devicesON(){
         int nDevices = 0;
         for(SmartDevice sd : this.devices.values()){
-            if(sd.getMode().equals(Mode.ON)) {
+            if(sd.lastRecentMode().equals(Mode.ON)) {
                 nDevices ++;
             }
         }
