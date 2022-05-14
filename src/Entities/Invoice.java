@@ -2,7 +2,7 @@ package Entities;
 
 import java.time.LocalDate;
 
-public class Invoice {
+public class Invoice implements Comparable<Invoice>{
 
     private String id;
     private String owner;
@@ -11,16 +11,20 @@ public class Invoice {
     private LocalDate fromDate;
     private LocalDate toDate;
     private double totalCost;
+    private double totalConsumption;
 
+    //Construtor vazio
     public Invoice() {
         this.id = "";
         this.owner = "";
         this.nif= "";
         this.supplier = "";
         this.totalCost = 0;
+        this.totalConsumption = 0;
     }
 
-    public Invoice(String id, String owner, String nif, String supplier, LocalDate fromDate, LocalDate toDate, double totalCost) {
+    //Construtor completo
+    public Invoice(String id, String owner, String nif, String supplier, LocalDate fromDate, LocalDate toDate, double totalCost, double totalConsumption) {
         this.id = id;
         this.owner = owner;
         this.nif = nif;
@@ -28,8 +32,10 @@ public class Invoice {
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.totalCost = totalCost;
+        this.totalConsumption = totalConsumption;
     }
 
+    //Construtor de cópia
     public Invoice(Invoice invoice){
         this.id = invoice.getId();
         this.owner = invoice.getOwner();
@@ -38,8 +44,10 @@ public class Invoice {
         this.fromDate = invoice.getFromDate();
         this.toDate = invoice.getToDate();
         this.totalCost = invoice.getTotalCost();
+        this.totalConsumption = invoice.getTotalConsumption();
     }
 
+    //Getters e Setters
     public String getId() {
         return this.id;
     }
@@ -96,10 +104,20 @@ public class Invoice {
         this.totalCost = totalCost;
     }
 
+    public double getTotalConsumption() {
+        return this.totalConsumption;
+    }
+
+    public void setTotalConsumption(double totalConsumption) {
+        this.totalConsumption = totalConsumption;
+    }
+
+    //Clone
     public Invoice clone(){
         return new Invoice(this);
     }
 
+    //Equals
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || o.getClass() != this.getClass()) return false;
@@ -108,8 +126,37 @@ public class Invoice {
                 this.owner.equals(in.getOwner()) &&
                 this.nif.equals(in.getNif()) &&
                 this.supplier.equals(in.getSupplier()) &&
-                this.totalCost == in.getTotalCost()) &&
+                this.totalCost == in.getTotalCost() &&
                 this.toDate.equals(in.getToDate()) &&
-                this.fromDate.equals(in.getFromDate());
+                this.fromDate.equals(in.getFromDate()) &&
+                this.totalConsumption == in.getTotalConsumption());
+    }
+
+    //toString
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Owner: ").append(this.owner)
+                .append("  NIF: ").append(this.nif)
+                .append("\n")
+                .append("Supplier: ").append(this.supplier)
+                .append("\n")
+                .append("Billing period: ").append(this.fromDate).append(" to ").append(this.toDate)
+                .append("\n")
+                .append("Total consumption: ").append(String.format("%,.2f",this.totalConsumption)).append(" kwh")
+                .append("\n")
+                .append("Total cost: ").append(String.format("%,.2f",this.totalCost))
+                .append("\n");
+
+        return sb.toString();
+
+    }
+
+
+    //Ordenar decrescentemente por consumo de energia
+    public int compareTo(Invoice o) {
+        if(this.totalConsumption > o.getTotalConsumption()) return -1;
+        else if(this.totalConsumption < o.getTotalConsumption()) return 1;
+        else return 0;
     }
 }

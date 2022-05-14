@@ -21,7 +21,7 @@ public class Model {
 
         this.casas = new HashMap<>();
         this.fornecedores = new HashMap<>();
-        this.invoices = new TreeMap<>();
+        this.invoices = new HashMap<>();
         this.fromDate = LocalDate.now();
         this.formulas = new HashMap<>();
         this.commands = new ArrayList<>();
@@ -40,7 +40,7 @@ public class Model {
             this.fornecedores.put(f.getSupplier(), f.clone());
         }
 
-        this.invoices = new TreeMap<>();
+        this.invoices = new HashMap<>();
         for(Invoice in : invoices.values()){
             this.invoices.put(in.getId(),in.clone());
         }
@@ -113,11 +113,15 @@ public class Model {
             /* Calcula custo total da fatura */
             double totalCost = fornecedor.invoiceAmount(consumption,this.fromDate,toDate,casa.devicesON(),casa.getTotalInstallationCost());
 
-            /* Guarda fatura no programa */
-            addInvoice(new Invoice(this.fromDate + casa.getNIF(), casa.getOwner(), casa.getNIF(), fornecedor.getSupplier(), this.fromDate, toDate, totalCost));
+            /* Id da fatura é Data+NIF */
+            String id = this.fromDate + casa.getNIF();
 
-            /* Atualiza número de faturas geradas por este fornecedor */
-            fornecedor.setnFaturas(fornecedor.getnFaturas()+1);
+            /* Guarda fatura no programa */
+            addInvoice(new Invoice(id, casa.getOwner(), casa.getNIF(), fornecedor.getSupplier(), this.fromDate, toDate, totalCost, consumption));
+
+            /* Adiciona id da fatura ao fornecedor */
+
+            fornecedor.addInvoice(id);
 
             /* Atualiza custo de instalação da casa para 0*/
             casa.setTotalInstallationCost(0);
@@ -130,7 +134,7 @@ public class Model {
     //Imprime faturas -> apenas para teste interno. Isto não vai para o trabalho
     public void printInvoices(){
         for(Invoice in : this.invoices.values()){
-            System.out.println("Owner: " + in.getOwner() + "Fornecedor: " + in.getSupplier() + "Total: " + in.getTotalCost());
+            System.out.println(in.toString());
         }
     }
 
@@ -179,6 +183,7 @@ public class Model {
             command.setDate(this.fromDate);
         }
 
+
         switch(command.getName()){
             case "setMode": // setMode casa dispositivo mode
                 setModeAdvanced(command.getCommand1(), command.getCommand2(), whichMode(command.getCommand3()), command.getDate());
@@ -212,17 +217,105 @@ public class Model {
         runCommands();
     }
 
+    public void printNIFs(){
+        int linha = 0;
+        for(Casa casa : this.casas.values()){
+            System.out.print(casa.getNIF());
+            System.out.print(" ");
+            linha++;
+            if(linha == 5){
+                System.out.println();
+                linha = 0;
+            }
+        }
+    }
+
 
     /* Queries estatísticas */
 
     //qual é a casa que mais gastou naquele período
+    public String higherTotalCost() throws NoInvoicesAvailable{
+        Casa result = null;
+        double cost = Integer.MIN_VALUE;
+
+        if(this.invoices.size() == 0){
+            //Não tem faturas
+            throw new NoInvoicesAvailable("Não há faturas guardadas.");
+        }
+
+        for(Invoice invoice : this.invoices.values()){
+            if(invoice.getTotalCost() > cost){
+                result = this.casas.get(invoice.getNif()).clone();
+                cost = invoice.getTotalCost();
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Owner: ").append(result.getOwner())
+                .append(" ")
+                .append("NIF: ").append(result.getNIF())
+                .append(" ")
+                .append("Supplier: ").append(result.getSupplier())
+                .append(" ")
+                .append("Total Cost: ").append(String.format("%,.2f",cost)).append("\n");
+
+
+
+        return sb.toString();
+
+    }
 
     //qual o comercializador com maior volume de facturação
+    public String hasMoreInvoices() throws NoInvoicesAvailable{
+        Fornecedor result = null;
+        int n = Integer.MIN_VALUE;
+
+        if(this.invoices.size() == 0){
+            //Não tem faturas
+            throw new NoInvoicesAvailable("Não há faturas guardadas.");
+        }
+
+        for(Fornecedor fornecedor : this.fornecedores.values()){
+            if(fornecedor.countInvoices() > n){
+                result = fornecedor.clone();
+                n = fornecedor.countInvoices();
+            }
+        }
+
+        return result.toString();
+    }
 
     //listar as facturas emitidas por um comercializador
+    public List<Invoice> invoicesPerSupplier(String supplier){
+        List<Invoice> result = new ArrayList<>();
+
+        for(String invoice : this.fornecedores.get(supplier).getInvoices()){
+            result.add(this.invoices.get(invoice).clone());
+        }
+
+        return result;
+    }
 
     //dar uma ordenação dos maiores consumidores de energia durante um período a determinar
+    public List<String> biggestEnergyConsumers(LocalDate fromDate, LocalDate toDate){
+        List<Invoice> invoices = new ArrayList<>();
 
+        for(Invoice in : this.invoices.values()){
+            if(in.getFromDate().compareTo(fromDate) <= 0 && in.getToDate().compareTo(toDate) <=0){
+                invoices.add(in.clone());
+            }
+        }
+
+        Collections.sort(invoices);
+        List<String> result = new ArrayList<>();
+        int count = 1;
+        for(Invoice in : invoices){
+            result.add(count + "º   " + "Owner: " + in.getOwner() + " NIF: " + in.getNif() + " Total: " + in.getTotalConsumption());
+            count++;
+        }
+
+        return result;
+    }
 
 
 

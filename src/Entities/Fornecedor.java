@@ -1,6 +1,8 @@
 package Entities;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -12,13 +14,13 @@ public class Fornecedor {
     private final double dailyCost = 2.5;
     private final double taxes = 0.23;
     private FormulaConsumo formulaConsumo;
-    private int nFaturas;
+    private List<String> invoices;
     private double installationCost;
 
     //Construtor vazio
     public Fornecedor() {
         this.supplier = "";
-        this.nFaturas = 0;
+        this.invoices = new ArrayList<>();
         this.installationCost = 0;
     }
 
@@ -26,7 +28,7 @@ public class Fornecedor {
     public Fornecedor(String supplier, FormulaConsumo formulaConsumo, double installationCost) {
         this.supplier = supplier;
         this.formulaConsumo = formulaConsumo;
-        this.nFaturas = 0;
+        this.invoices = new ArrayList<>();
         this.installationCost = installationCost;
     }
 
@@ -34,7 +36,7 @@ public class Fornecedor {
     public Fornecedor(String supplier, double installationCost) {
         this.supplier = supplier;
         this.formulaConsumo = null;
-        this.nFaturas = 0;
+        this.invoices = new ArrayList<>();
         this.installationCost = installationCost;
     }
 
@@ -42,7 +44,7 @@ public class Fornecedor {
     public Fornecedor(Fornecedor fornecedor){
         this.supplier = fornecedor.getSupplier();
         this.formulaConsumo = fornecedor.getFormulaConsumo();
-        this.nFaturas = fornecedor.getnFaturas();
+        this.invoices = fornecedor.getInvoices();
         this.installationCost = fornecedor.getInstallationCost();
     }
 
@@ -55,9 +57,23 @@ public class Fornecedor {
         this.supplier = supplier;
     }
 
-    public int getnFaturas(){ return this.nFaturas;}
+    public List<String> getInvoices() {
+        List<String> result = new ArrayList<>();
 
-    public void setnFaturas(int nFaturas){this.nFaturas = nFaturas;}
+       for(String str : this.invoices){
+           result.add(str);
+       }
+
+        return result;
+    }
+
+    public void setInvoices(List<String> invoices) {
+        this.invoices = new ArrayList<>();
+
+        for(String str : invoices){
+           this.invoices.add(str);
+        }
+    }
 
     public double getDailyCost() {
         return this.dailyCost;
@@ -86,13 +102,32 @@ public class Fornecedor {
         Fornecedor f = (Fornecedor) o;
         return (this.supplier.equals(f.supplier) &&
                 this.formulaConsumo.equals(f.getFormulaConsumo()) &&
-                this.nFaturas == f.getnFaturas() &&
+                this.invoices.equals(f.getInvoices()) &&
                 this.installationCost == f.getInstallationCost());
     }
 
     //Clone
     public Fornecedor clone(){
         return new Fornecedor(this);
+    }
+
+    //toString
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Supplier: ").append(this.supplier)
+                .append("\n");
+
+        return sb.toString();
+    }
+
+
+    //Adiciona id da fatura ao fornecedor
+    public void addInvoice(String id){
+        this.invoices.add(id);
+    }
+
+    public int countInvoices(){
+        return this.invoices.size();
     }
 
     //Calcula valor da fatura de acordo com sua fórmula de cálculo

@@ -5,6 +5,7 @@ import Enums.Tone;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
+import java.util.List;
 
 public class Main {
 
@@ -29,8 +30,34 @@ public class Main {
         }
 
 
+        Casa c2 = new Casa("Rafael", "4567", "EDP" );
+
+        try {
+            c2.addLocation("Cozinha");
+            c2.addLocation("Jardim");
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+
+        try {
+            c2.addDeviceToLocation("Cozinha", new SmartBulb("lampada1", Tone.COLD, 1.57, 3.57, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
+            c2.addDeviceToLocation("Jardim", new SmartBulb("lampada2", Tone.WARM, 1.57, 3.57, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+        try {
+            model.addCasa(c2);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+
+
+
         //String id, Tone tone, double consumptionBase, double dimension
-        Casa c1 = new Casa("Millena", "1234", "Luzboa");
+        Casa c1 = new Casa("Zezinho", "1234", "Luzboa");
         try {
             c1.addLocation("Quarto");
             c1.addLocation("Sala");
@@ -42,9 +69,10 @@ public class Main {
         SmartBulb sb = new SmartBulb("lampada1", Tone.COLD, 1.57, 3.57,  Mode.ON, LocalDate.parse("2022-05-12"));
 
         try {
-            c1.addDeviceToLocation("Quarto", new SmartBulb("lampada1", Tone.COLD, 1.57, 3.57, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
-            c1.addDeviceToLocation("Sala", new SmartBulb("lampada2", Tone.WARM, 1.57, 3.57, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
+            c1.addDeviceToLocation("Quarto", new SmartCamera("camera", 2.1, 1388, 760, 20, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
+            c1.addDeviceToLocation("Sala", new SmartCamera("camera2", 2.1, 1388, 760, 20, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
         }
+
         catch (Exception e){
             System.out.println(e);
         }
@@ -58,25 +86,20 @@ public class Main {
 
 
 
-
-
-
-
         model.generateInvoices(LocalDate.parse("2022-05-15"));
-
         model.printInvoices();
 
+        List<String> list = model.biggestEnergyConsumers(LocalDate.parse("2022-05-13"),LocalDate.parse("2022-05-18"));
+
+        for(String str : list){
+            System.out.println(str);
+        }
+
+        System.out.println(list.size());
+
+
+
         /*
-
-        Casa c2 = new Casa("Rafael", "4567", "EDP" );
-
-        c2.addLocation("Cozinha");
-        c2.addLocation("Jardim");
-        c2.addDeviceToLocation("Cozinha", new SmartCamera("camera", 2.1, 1388,760,20,Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
-        c2.addDeviceToLocation("Jardim", new SmartCamera("camera2", 2.1, 1388,760,20, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
-
-        model.addCasa(c2);
-
         Casa c3 = new Casa("Alice", "8910", "GoldEnergy");
 
         c3.addLocation("Banheiro");
