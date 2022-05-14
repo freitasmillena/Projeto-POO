@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Random;
 
 import Entities.Casa;
+import Entities.Exceptions.*;
 import Entities.Formula1;
 import Entities.Formula2;
 import Entities.Formula3;
@@ -23,16 +24,11 @@ import Entities.Model;
 import Entities.SmartBulb;
 import Entities.SmartCamera;
 import Entities.SmartSpeaker;
-import Entities.Exceptions.DateAlreadyExistsException;
-import Entities.Exceptions.HouseAlreadyExists;
-import Entities.Exceptions.LocationAlreadyExists;
-import Entities.Exceptions.LocationDoesntExist;
-import Entities.Exceptions.SupplierAlreadyExists;
+import Entities.Command;
 import Enums.Mode;
 import Enums.Tone;
 
 public class Parser {
-
 
     public boolean parseLogs(Model model) throws FileNotFoundException, SupplierAlreadyExists, HouseAlreadyExists, LocationAlreadyExists, DateAlreadyExistsException, LocationDoesntExist {
         List<String> linhas = lerFicheiro("logs.txt");
@@ -136,24 +132,33 @@ public class Parser {
     }
 
     // Paraser para ler os comandos do ficheiro de automatização da simulação
-    public static boolean parseCommands(Model model) throws FileNotFoundException {
+    public static void parseAdvanced(Model model) throws FileNotFoundException {
         // PREENCHER ------------------------------------------------------------------------------------------------------------
         List<String> linhas = lerFicheiro("     ");
-        boolean end_program = false; // Caso apareceça um registo inválido, paramos o programa
         String[] linhaPartida;
-
+        LocalDate date;
+        Command command;
         for (String linha : linhas) {
             linhaPartida = linha.split(" ");
-            int argc = linhaPartida.length; // nº de argumentos do coamndo recebido (não é o comprimento)
-            
-            // https://mkyong.com/java8/java-8-how-to-convert-string-to-localdate/
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.d");
-            LocalDate data_comando = LocalDate.parse(linhaPartida[0], formatter); // Porque as dats possuem pontos em vez de -
-
+            date = LocalDate.parse(linhaPartida[0]);
+            System.out.println(date + " " + linhaPartida[1]);
+            switch (linhaPartida[1]) {
+                case "setMode" -> { //data setMode casa dispositivo mode
+                    Mode mode = model.whichMode(linhaPartida[4]);
+                    try {
+                        model.setModeAdvanced(linhaPartida[2], linhaPartida[3], mode, date);
+                    } catch (InvalidDateException | DateAlreadyExistsException e) {
+                        System.out.println(e.getMessage());
+                    }
+                } //data changeSupplier casa fornecedor
+                case "changeSupplier", "changeFormula" -> { //data changeFormula fornecedor formula
+                    command = new Command(date, linhaPartida[1], linhaPartida[2], linhaPartida[3]);
+                    model.addComandBasic(command);
+                }
+            }
 
         }
-        
-        return false; // Depois CORRIGIR
+
     }
 
 
