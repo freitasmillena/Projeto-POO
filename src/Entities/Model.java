@@ -55,6 +55,10 @@ public class Model {
         this.fromDate = newDate;
     }
 
+    public LocalDate getFromDate(){
+        return this.fromDate;
+    }
+
     //Adicionar casa
     public void addCasa(Casa casa) throws HouseAlreadyExists {
         if(this.casas.containsKey(casa.getNIF())){

@@ -10,7 +10,7 @@ public class Menu {
         System.out.println("-----------| MENU INICIAL |-----------");
         System.out.println("");
         System.out.println("-> 1) Automatizar a simulação");
-        System.out.println("-> 2) Inserir os avanços do tempo");
+        System.out.println("-> 2) Inserir dados manualmente");
         System.out.println("-> 0) Sair");
         System.out.println("");
         while (true) {
@@ -35,7 +35,8 @@ public class Menu {
         System.out.println("-----------| MENU |-----------");
         System.out.println("");
         System.out.println("-> 1) Inserir");
-        System.out.println("-> 2) Alterar");
+        System.out.println("-> 2) Modificar");
+        System.out.println("-> 3) Avançar no tempo");
         System.out.println("-> 0) Sair");
         System.out.println("");
         while (true) {

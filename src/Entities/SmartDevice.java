@@ -12,7 +12,7 @@ abstract class SmartDevice {
 
     private String id;
     private double consumptionBase;
-    private NavigableMap<LocalDate, Mode> logs;
+    private NavigableMap<LocalDate, Mode> logs; // histórico das alterações, por data
 
     //Construtor vazio
     public SmartDevice() {

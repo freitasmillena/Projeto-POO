@@ -18,13 +18,13 @@ public class Controller {
         // Map<String, Invoice> invoices = new HashMap<>();
         // LocalDate fromDate;
 
-        Window.clear(); // limpar todo o conteúdo da linah de comandos
+        Window.clear(); // limpar todo o conteúdo da linha de comandos
+
+        boolean end_program = false; 
 
         Model model = new Model();
         LocalDate today = LocalDate.now();
         model.setFromDate(today); // definir a data de execução do programa como a data inicial do Model
-
-        // boolean errorMessage = false;
 
         Window.createPOO();
 
@@ -35,7 +35,8 @@ public class Controller {
         System.out.println("   Por favor, espere!");
         System.out.println("");
 
-        Parser.parse(model);
+        Parser p = new Parser();
+        end_program = p.parseLogs(model);
 
         System.out.println("*********************");
         System.out.println("* Parsing CONCLUIDO *");
@@ -69,6 +70,15 @@ public class Controller {
 
     public static void controllerAutomatizacao(Model model) {
 
+        System.out.println("");
+        System.out.println("**************************************************");
+        System.out.println("* Inicializado o parsing automático dos comandos *");
+        System.out.println("**************************************************");
+        System.out.println("");
+        System.out.println("   Por favor, espere!");
+        System.out.println("");
+
+
     }
 
     public static void controllerUtilizador(Model model) {
@@ -86,7 +96,10 @@ public class Controller {
                 case 1: // Inserir dados no modelo
 
                     break;
-                case 2: // Alterar dados do modelo
+                case 2: // Modificar dados do modelo
+                    
+                    break;
+                case 3: // Alterar dados do modelo
                     
                     break;
                 default:
