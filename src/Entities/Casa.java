@@ -208,4 +208,22 @@ public class Casa {
         }
         return nDevices;
     }
+
+    public void printLocations(){
+        for(String location : this.locations.keySet()){
+            System.out.println(location);
+        }
+    }
+
+    public void printDevicesFromLocation(String location){
+        for(String sd : this.locations.get(location)){
+            System.out.println(sd);
+        }
+
+    }
+
+    public void printLogsfromDevice(String id){
+        SmartDevice sd = this.devices.get(id);
+        sd.printLogs();
+    }
 }

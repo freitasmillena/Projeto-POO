@@ -148,4 +148,11 @@ abstract class SmartDevice {
         return total;
 
     }
+
+
+    public void printLogs(){
+        for(LocalDate date : this.logs.keySet()){
+            System.out.println("Date: " + date + " Mode: " + this.logs.get(date));
+        }
+    }
 }

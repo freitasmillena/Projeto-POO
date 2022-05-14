@@ -164,8 +164,15 @@ public class Model {
         return formulaConsumo;
     }
 
+    public void setModeAdvanced(String nif, String sd, Mode mode, LocalDate date) throws InvalidDateException, DateAlreadyExistsException{
+        if(this.fromDate.compareTo(date) > 0){
+            throw new InvalidDateException("Invalid date " +  date + ". It must be from " + this.fromDate);
+        }
+        this.casas.get(nif).setMode(sd,mode,date);
+    }
+
     //Executar 1 comando
-    public void runCommand(Command command) throws DateAlreadyExistsException {
+    public void runCommand(Command command) throws DateAlreadyExistsException, InvalidDateException {
         //Se for esta data, são comandos da funcionalidade básica. Portanto tem que atualizar para data de início da próxima fatura
         //Se for funcionalidade avançada, n entra nesta condição e usa as datas passadas no ficheiro
         if(command.getDate().equals(LocalDate.parse("1998-01-27"))){
@@ -174,8 +181,7 @@ public class Model {
 
         switch(command.getName()){
             case "setMode": // setMode casa dispositivo mode
-                Casa casa = this.casas.get(command.getCommand1());
-                casa.setMode(command.getCommand2(), whichMode(command.getCommand3()), command.getDate());
+                setModeAdvanced(command.getCommand1(), command.getCommand2(), whichMode(command.getCommand3()), command.getDate());
                 break;
             case "changeSupplier": //changeSupplier casa fornecedor
                 Casa c = this.casas.get(command.getCommand1());
@@ -189,7 +195,7 @@ public class Model {
     }
 
     //percorrer commands e executá-los
-    public void runCommands() throws DateAlreadyExistsException{
+    public void runCommands() throws DateAlreadyExistsException, InvalidDateException{
         for(Command command : this.commands){
             runCommand(command);
         }
@@ -236,6 +242,13 @@ public class Model {
     * 2022-05-14 changeFormula EDP Formula1
     * 2022-05-15 generateInvoice  (este gera fatura com fromDate do model e toDate = 2022-05-15)
     *
+    *
     * */
 
+    /* Modo básico */
+    /*
+    Comando é criado com data model.getFromDate pq os comandos de setMode precisam desta data para os logs
+    No modo avançado, n é criado comando para setMode, é feito logo em seguida.
+
+     */
 }
