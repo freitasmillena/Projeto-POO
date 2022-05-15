@@ -153,9 +153,9 @@ public class Parser {
     }
 
     // Paraser para ler os comandos do ficheiro de automatização da simulação
-    public static void parseAdvanced(Model model) throws FileNotFoundException {
+    public static void parseAdvanced(Model model, String fileName) throws FileNotFoundException {
         // PREENCHER ------------------------------------------------------------------------------------------------------------
-        List<String> linhas = lerFicheiro("     ");
+        List<String> linhas = lerFicheiro(fileName); //VER SE É POSSÍVEL PEDIR O CAMINHO DO FICHEIRO AO UTILIZADOR QUANDO SELECIONAR A VERSAO AUTOMATIZADA
         boolean end_program = false; // Caso apareceça um registo inválido, paramos o programa
         String[] linhaPartida;
 
@@ -177,14 +177,21 @@ public class Parser {
                     }
                     break;
                 
-                case ("changeSupplier"): //data changeSupplier casa fornecedor
+                case "changeSupplier": //data changeSupplier casa fornecedor
 
-                    break;
-
-                case ("changeFormula") : //data changeFormula fornecedor formula
+                case "changeFormula": //data changeFormula fornecedor formula
                     command = new Command(date, linhaPartida[1], linhaPartida[2], linhaPartida[3]);
                     model.addComandBasic(command);
-                
+                    break;
+
+                case "generateInvoices": //data generateInvoices
+                    try {
+                        model.moveForward(date);
+                    } catch (DateAlreadyExistsException | InvalidDateException e) {
+                        System.out.println(e.getMessage());
+                    } catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
             }
 
         }
