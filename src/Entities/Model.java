@@ -2,6 +2,7 @@ package Entities;
 
 import Entities.Exceptions.*;
 import Enums.Mode;
+import Window.Window;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -133,9 +134,11 @@ public class Model {
 
     //Imprime faturas -> apenas para teste interno. Isto não vai para o trabalho
     public void printInvoices(){
+        System.out.println("---| Faturas |---\n");
         for(Invoice in : this.invoices.values()){
             System.out.println(in.toString());
         }
+        System.out.println("");
     }
 
     //Adiciona pedido na lista de espera
@@ -158,12 +161,24 @@ public class Model {
     public FormulaConsumo whichFormula(String formula){
         FormulaConsumo formulaConsumo = null;
         switch (formula) {
-            case "Formula1" -> formulaConsumo = new Formula1();
-            case "Formula2" -> formulaConsumo = new Formula2();
-            case "Formula3" -> formulaConsumo = new Formula3();
-            case "Formula4" -> formulaConsumo = new Formula4();
-            case "Formula5" -> formulaConsumo = new Formula5();
-            case "Formula6" -> formulaConsumo = new Formula6();
+            case "Formula1":
+                formulaConsumo = new Formula1();
+                break;
+            case "Formula2": 
+                formulaConsumo = new Formula2();
+                break;
+            case "Formula3": 
+                formulaConsumo = new Formula3();
+                break;
+            case "Formula4": 
+                formulaConsumo = new Formula4();
+                break;
+            case "Formula5": 
+                formulaConsumo = new Formula5();
+                break;
+            case "Formula6": 
+                formulaConsumo = new Formula6();
+                break;
         }
         return formulaConsumo;
     }
@@ -217,17 +232,20 @@ public class Model {
         runCommands();
     }
 
+    // Imprime até 5 NIF's por linha no terminal
     public void printNIFs(){
         int linha = 0;
+        Window.inicialWriteNIF();
         for(Casa casa : this.casas.values()){
             System.out.print(casa.getNIF());
-            System.out.print(" ");
+            System.out.print("  ");
             linha++;
             if(linha == 5){
-                System.out.println();
+                System.out.println("");
                 linha = 0;
             }
         }
+        System.out.println("");
     }
 
 
