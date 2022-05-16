@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 
 import Entities.Model;
 import Entities.Exceptions.DateAlreadyExistsException;
@@ -21,6 +22,8 @@ public class Controller {
     // Responsável por inicializar o programa
     public static void run() throws FileNotFoundException, SupplierAlreadyExists, HouseAlreadyExists, LocationAlreadyExists, DateAlreadyExistsException, LocationDoesntExist, InvalidDateException {
         boolean end_program = false; 
+
+        Scanner scanner = new Scanner(System.in);
 
         Model model = new Model();
         LocalDate today = LocalDate.now();
@@ -106,14 +109,22 @@ public class Controller {
                     break;
             }
         }
-
+        scanner.close();
         Window.finalText();
     }
 
     public static void controllerAutomatizacao(Model model) throws FileNotFoundException {
         Window.parsingAdvanced();
-        Parser.parseAdvanced(model);
+        Parser.parseAdvanced(model); // CORRIGIR
         Window.parsingConcluded();
+
+        int opcao_utilizador = Menu.menuOpcoesAutomatizacao();;
+
+        switch (opcao_utilizador) {
+            case 1 : // Estatísticas
+                controllerEstatisticas(model);
+                break;
+        }
 
     }
 
@@ -144,14 +155,14 @@ public class Controller {
                 switch (opcao_utilizador) {
 
                     case 1: // Alterar dados do modelo
-                    end_program = end_program || controllerAlterar(model);
+                        end_program = end_program || controllerAlterar(model);
                         break;
-
                     case 2: // Avançar no tempo
                         avancou_tempo = true;
                         controllerTempo(model);
                         break;
                     case 3: // Apresentar TODAS as Faturas
+                        model.generateInvoices(model.getFromDate());
                         model.printInvoices();
                         break;
                     case 4: // Estatísticas
@@ -184,7 +195,7 @@ public class Controller {
                     controllerAlterar(model);
                     break;
                 case 2: // Ligar/Desligar 1 dispositivo
-
+                    controllerDeviceMode(model);
                     break;
                 case 3: // Ligar TODOS os dispositivos
 
@@ -195,7 +206,6 @@ public class Controller {
                 default: // Desligar o programa
                     end_program = true;
                     break;
-
             } 
         }
         return end_program;
@@ -208,7 +218,6 @@ public class Controller {
 
     public static void controllerTempo(Model model) throws InvalidDateException, DateAlreadyExistsException {
         Window.clear();
-        
         while(true) {
             try {
                 LocalDate data_nova = Menu.menuTempo(model.getFromDate());
@@ -231,55 +240,55 @@ public class Controller {
         model.printInvoices();
     }
 
-    public static void controllerEstatisticas(Model model) {
+
+    public static void controllerDeviceMode(Model model) {
+        int device = Menu.menuDispositivo();
+    }
+
+    public static boolean controllerEstatisticas(Model model) {
         boolean end_program = false;
         int opcao_utilizador = -1;
         opcao_utilizador = Menu.menuEstatisticas();
 
         switch (opcao_utilizador) {
             case 1: // Casa que mais gastou
-                
                 Window.estatistica1();
                 break;
-
             case 2: // Comercializador com maior volume de faturação
-
                 Window.estatistica2();
                 break;
-
             case 3: // Faturas emitidas por um comercializador
                 controllerEstatistica3(model);
                 break;
-
             case 4: // maiores consumidores de energia
                 controllerEstatistica4(model);
                 break;
-            
             default: // Desligar o programa
                 end_program = true;
                 break;
         }
-
-
-
-        Window.waitEstatisticas();
-        
-    
+        return end_program;
     }
 
     public static void controllerEstatistica3(Model model) {
+        model.generateInvoicesFornecedor();
+        System.out.println("");
+        model.printInvoices();
+    
+    }
+
+    public static void controllerEstatistica4(Model model) {
+        LocalDate from_date = Menu.menuEstatistica4FromDate();
+        LocalDate to_date = Menu.menuEstatistica4FromDate();
+
+        Window.waitEstatisticas();
+
         List<String> list = model.biggestEnergyConsumers(LocalDate.parse("2022-05-13"),LocalDate.parse("2022-05-18"));
-        
+
         Window.resultsEstatisticas();
-        
-        
         System.out.println("");
         for(String str : list){
             System.out.println(str);
         }
-    }
-
-    public static void controllerEstatistica4(Model model) {
-
     }
 }

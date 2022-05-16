@@ -209,16 +209,80 @@ public class Menu {
     }
 
     public static void menuEstatistica3() {
-
+        Window.resultsEstatisticas();
+        System.out.println("----| 3. Listar TODAS as faturas emitidas por um comercializador |----");
     }
 
-    public static void menuEstatistica4FromDate() {
+    public static LocalDate menuEstatistica4FromDate() {
+        Window.resultsEstatisticas();
+        System.out.println("----| 4. Listar os maiores consumidores de energia durante um período |----");
+        System.out.println("");
+        System.out.println("Para calcular o ponto 4. das estatísticas, precisamos do período das datas que deseja.");
+        System.out.println("");
+        System.out.print("Estrutura de uma data -> yyyy-MM-dd (yyyy - ano; MM - mês; dd - dia)");
 
+        LocalDate data_inicial;
 
-        System.out.println("Para calcular o ponto 4. das estatísticas, precisamos do intervalo das datas que deseja.");
+        while(true) {
+            System.out.print("Escreva a data inicial: ");
+            try (Scanner scanner = new Scanner(System.in);) {
+                data_inicial = LocalDate.parse(scanner.nextLine());
+                System.out.println("");
+                return data_inicial;
+            } 
+            catch (java.util.InputMismatchException e) {
+                System.out.println("");
+                System.out.println("");
+                System.out.println(Cores.VERMELHO  + "!!! Data errada !!! Por favor, siga a estrutura correta de uma data" + Cores.RESET);
+                continue;
+            }
+        }
     }
 
-    public static void menuEstatistica4ToDate() {
+    public static LocalDate menuEstatistica4ToDate() {
+        LocalDate data_final;
 
+        while(true) {
+            System.out.print("Escreva a data inicial: ");
+            try (Scanner scanner = new Scanner(System.in);) {
+                data_final = LocalDate.parse(scanner.nextLine());
+                System.out.println("");
+                return data_final;
+            } 
+            catch (java.util.InputMismatchException e) {
+                System.out.println("");
+                System.out.println("");
+                System.out.println(Cores.VERMELHO  + "!!! Data errada !!! Por favor, siga a estrutura correta de uma data" + Cores.RESET);
+                continue;
+            }
+        }
+    }
+
+
+
+    public static int menuOpcoesAutomatizacao() {
+        Window.clear();
+        System.out.println("-------| MENU - Alterar |-------");
+        System.out.println("");
+        System.out.println("-> 1) Estatísticas");
+        System.out.println("-> (Qualquer outra tecla) SAIR");
+        System.out.println("");
+        int opcao_utilizador;
+
+        while (true) {
+            System.out.print("Selecione a opção pretendida: ");
+            try (Scanner scanner = new Scanner(System.in)) {
+                opcao_utilizador = scanner.nextInt();
+                System.out.println("");
+                return opcao_utilizador;
+            }
+            catch (java.util.InputMismatchException e) {
+                System.out.println("");
+                System.out.println("");
+                System.out.println(Cores.VERMELHO  + "!!! Valor errado !!! Por favor, insira um valor válido." + Cores.RESET);
+                System.out.println("");
+                continue;
+            }
+        }
     }
 }
