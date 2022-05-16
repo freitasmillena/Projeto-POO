@@ -168,7 +168,7 @@ public class Parser {
             switch (linhaPartida[1]) {
 
                 case "setMode" : //data setMode casa dispositivo mode
-                    Mode mode = model.whichMode(linhaPartida[4]);
+                    int mode = model.whichMode(linhaPartida[4]);
                     try {
                         model.setModeAdvanced(linhaPartida[2], linhaPartida[3], mode, date);
                     }
@@ -226,17 +226,13 @@ public class Parser {
         double dimensao = Double.parseDouble(campos[1]);
         double consumo = Double.parseDouble(campos[2]);
 
-        Mode mode = null;
+        int mode;
         int mode_number = randomMode();
-        if (mode_number == 0) mode = Mode.OFF;
-        else mode = Mode.ON;
+        if (mode_number == 0) mode = 0;
+        else mode = 1;
 
-        Tone tone = parseTone(tone_string);
-        if (tone_string.equals("Warm")) tone = Tone.WARM;
-        else if (tone_string.equals("Neutral")) tone = Tone.NEUTRAL;
-        else if (tone_string.equals("Cold")) tone = Tone.COLD;
-        else tone = null;
-
+        int tone = parseTone(tone_string);
+        
         SmartBulb sb = new SmartBulb(String.valueOf(id), tone, consumo, dimensao, mode, data);
         return sb;
     }
@@ -248,10 +244,10 @@ public class Parser {
         String marca = campos[3];
         double consumo = Double.parseDouble(campos[4]);
 
-        Mode mode = null;
+        int mode;
         int mode_number = randomMode();
-        if (mode_number == 0) mode = Mode.OFF;
-        else mode = Mode.ON;
+        if (mode_number == 0) mode = 0;
+        else mode = 1;
 
         SmartSpeaker ss = new SmartSpeaker(String.valueOf(id), consumo, canal, volume, marca, mode, data);
         return ss;
@@ -268,10 +264,10 @@ public class Parser {
         int fileSize = Integer.parseInt(campos[1]);
         double consumo = Double.parseDouble(campos[2]);
 
-        Mode mode = null;
+        int mode;
         int mode_number = randomMode();
-        if (mode_number == 0) mode = Mode.OFF;
-        else mode = Mode.ON;
+        if (mode_number == 0) mode = 0;
+        else mode = 1;
 
         SmartCamera sc = new SmartCamera(String.valueOf(id), consumo, resolucaoX, resolucaoY, fileSize, mode, data);
         return sc;
@@ -297,12 +293,12 @@ public class Parser {
     }
 
     // cria uma variável Tone, a partir do tone recebido pela função
-    public static Tone parseTone(String s) {
-        Tone tone;
-        if (s.equals("Warm")) tone = Tone.WARM;
-        else if (s.equals("Neutral")) tone = Tone.NEUTRAL;
-        else if (s.equals("Cold")) tone = Tone.COLD;
-        else tone = null;
+    public static int parseTone(String s) {
+        int tone;
+        if (s.equals("Warm")) tone = 2;
+        else if (s.equals("Neutral")) tone = 1;
+        else if (s.equals("Cold")) tone = 0;
+        else tone = 1;
         return tone;
     }
 
