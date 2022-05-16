@@ -1,18 +1,18 @@
 package Entities;
 
 import Entities.Exceptions.DateAlreadyExistsException;
-import Enums.Mode;
 
-import java.time.Duration;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-abstract class SmartDevice {
+abstract class SmartDevice implements Serializable {
 
     private String id;
     private double consumptionBase;
-    private NavigableMap<LocalDate, Mode> logs; // histórico das alterações, por data
+    private NavigableMap<LocalDate, Integer> logs; // histórico das alterações, por data
+    //Mode ON = 1, MODE OFF = 0
 
     //Construtor vazio
     public SmartDevice() {
@@ -23,11 +23,11 @@ abstract class SmartDevice {
 
 
    //Construtor completo
-    public SmartDevice(String s, Mode m, double consumptionBase, LocalDate fromDate){
+    public SmartDevice(String s, int mode, double consumptionBase, LocalDate fromDate){
         this.id = s;
         this.consumptionBase = consumptionBase;
         this.logs = new TreeMap<>();
-        this.logs.put(fromDate,m);
+        this.logs.put(fromDate,mode);
 
     }
 
@@ -36,7 +36,7 @@ abstract class SmartDevice {
         this.id = s;
         this.consumptionBase = consumptionBase;
         this.logs = new TreeMap<>();
-        this.logs.put(fromDate, Mode.ON); //começam ligados
+        this.logs.put(fromDate, 1); //começam ligados
     }
 
     //Construtor de cópia
@@ -75,10 +75,34 @@ abstract class SmartDevice {
                 this.logs.equals(sd.getLogs()));
     }
 
+    public List<String> logToString(NavigableMap<LocalDate, Integer> logs){
+        List<String> list = new ArrayList<>();
+        String modo;
+        for(LocalDate entry : logs.keySet()){
+            if(logs.get(entry) == 1) modo = "ON";
+            else modo = "OFF";
+            list.add(entry.toString()+ " Modo: " + modo);
+        }
+
+        return list;
+    }
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Id: ").append(this.id)
+                .append(" ")
+                .append("Consumo base: ").append(this.consumptionBase)
+                .append(" ")
+                .append("\n")
+                .append("Histórico de mudanças de estado (ON/OFF): ").append(logToString(this.logs))
+                .append("\n");
+
+        return sb.toString();
+    }
+
     /****/
 
     //Adicionar registo de mudança de estado do dispositivo
-    public void addLog(LocalDate fromDate, Mode mode) throws DateAlreadyExistsException {
+    public void addLog(LocalDate fromDate, int mode) throws DateAlreadyExistsException {
         if(this.logs.containsKey(fromDate)){
             throw new DateAlreadyExistsException("Invalid Date: " + fromDate + " already exists");
         }
@@ -88,8 +112,8 @@ abstract class SmartDevice {
     }
 
    //Get logs
-   public NavigableMap<LocalDate, Mode> getLogs(){
-        NavigableMap<LocalDate, Mode> result = new TreeMap<>();
+   public NavigableMap<LocalDate, Integer> getLogs(){
+        NavigableMap<LocalDate, Integer> result = new TreeMap<>();
 
         for(LocalDate date : this.logs.keySet()){
             result.put(date, this.logs.get(date));
@@ -98,9 +122,10 @@ abstract class SmartDevice {
     }
 
    //Modo atual do dispositivo
-   public Mode lastRecentMode(){
-        Map.Entry<LocalDate, Mode> last = this.logs.lastEntry();
-        return last.getValue();
+   public int lastRecentMode(){
+        Map.Entry<LocalDate, Integer> last = this.logs.lastEntry();
+        int mode = last.getValue();
+        return mode;
    }
 
 
@@ -109,7 +134,7 @@ abstract class SmartDevice {
 
         LocalDate inicio = fromDate;
         LocalDate intermedio =fromDate;
-        Mode mode;
+        int mode;
         int dias = 0;
         double total = consumoEnergetico();
 
@@ -119,12 +144,12 @@ abstract class SmartDevice {
                 mode = this.logs.get(inicio);
             }
             else {
-                Map.Entry<LocalDate, Mode> value = this.logs.lowerEntry(inicio);
+                Map.Entry<LocalDate, Integer> value = this.logs.lowerEntry(inicio);
                 mode = value.getValue();
 
             }
 
-            Map.Entry<LocalDate, Mode> value = this.logs.higherEntry(inicio);
+            Map.Entry<LocalDate, Integer> value = this.logs.higherEntry(inicio);
 
             if(value == null){
                 intermedio = toDate;
@@ -135,7 +160,7 @@ abstract class SmartDevice {
 
             }
 
-            if (mode.equals(Mode.ON)) {
+            if (mode==1) { // ON
                 dias += ChronoUnit.DAYS.between(inicio,intermedio);
             }
 

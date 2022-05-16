@@ -1,6 +1,8 @@
 package Entities;
 
-public class Formula1 implements FormulaConsumo{
+import java.io.Serializable;
+
+public class Formula1 implements FormulaConsumo, Serializable {
 
     public Formula1() {
     }
@@ -9,6 +11,16 @@ public class Formula1 implements FormulaConsumo{
 
         return (nDevices > 10? dailyCost*consumption*(1+taxes)*0.9 : dailyCost*consumption*(1+taxes)*0.75);
     }
+
+    public FormulaConsumo clone() {
+        return new Formula1();
+    }
+
+    public String toString(){
+        return "Formula 1";
+    }
+
+
 
 
 }

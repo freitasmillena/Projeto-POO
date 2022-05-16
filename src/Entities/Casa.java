@@ -3,12 +3,13 @@ package Entities;
 import Entities.Exceptions.DateAlreadyExistsException;
 import Entities.Exceptions.LocationAlreadyExists;
 import Entities.Exceptions.LocationDoesntExist;
-import Enums.Mode;
 
+
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
-public class Casa {
+public class Casa implements Serializable {
 
     private String owner;
     private String NIF;
@@ -22,7 +23,7 @@ public class Casa {
         this.owner= "";
         this.NIF = "";
         this.supplier = "";
-        this.devices = new HashMap<>();
+        this.devices = new TreeMap<>();
         this.locations = new HashMap<>();
         this.totalInstallationCost = 0;
 
@@ -32,7 +33,7 @@ public class Casa {
     public Casa(String owner, String nif, String fornecedor){
         this.owner = owner;
         this.NIF = nif;
-        this.devices = new HashMap<>();
+        this.devices =  new TreeMap<>();
         this.locations = new HashMap<>();
         this.supplier = fornecedor;
         this.totalInstallationCost = 0;
@@ -80,7 +81,7 @@ public class Casa {
     }
 
     public Map<String, SmartDevice> getDevices(){
-        Map<String,SmartDevice> result = new HashMap<>();
+        Map<String,SmartDevice> result =  new TreeMap<>();
 
         for(SmartDevice sd : this.devices.values()){
             result.put(sd.getId(),sd.clone());
@@ -130,22 +131,36 @@ public class Casa {
                 this.totalInstallationCost == casa.getTotalInstallationCost());
     }
 
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Dono: ").append(this.owner)
+                .append(" ")
+                .append("NIF: ").append(this.NIF)
+                .append(" Fornecedor: ").append(this.supplier)
+                .append("\n");
+                for(String location : this.locations.keySet()){
+                    sb.append(location).append(": ").append(this.locations.get(location)).append("\n");
+                }
+
+        return sb.toString();
+    }
+
     //Mudar o modo de um dispositivo "s"
-    public void setMode(String s, Mode mode, LocalDate fromDate) throws DateAlreadyExistsException {
+    public void setMode(String s, int mode, LocalDate fromDate) throws DateAlreadyExistsException {
         this.devices.get(s).addLog(fromDate, mode);
     }
 
     //Mudar o modo de todos os dispositivos da casa
-    public void setAllMode(Mode mode, LocalDate fromDate) throws DateAlreadyExistsException {
+    public void setAllMode(int mode, LocalDate fromDate) throws DateAlreadyExistsException {
         for(SmartDevice sm : this.devices.values()){
             sm.addLog(fromDate, mode);
         }
     }
 
     //Mudar o modo de todos os dispositivos de um cómodo
-    public void setAllModeLocation(String location, Mode mode, LocalDate fromDate) throws DateAlreadyExistsException, LocationDoesntExist {
+    public void setAllModeLocation(String location, int mode, LocalDate fromDate) throws DateAlreadyExistsException, LocationDoesntExist {
         if(!hasLocation(location)){
-            throw new LocationDoesntExist("This location: " + location + " doesnt exist.");
+            throw new LocationDoesntExist("Esta divisão: " + location + " não existe.");
         }
         for(String devices : this.locations.get(location)){
             this.devices.get(devices).addLog(fromDate, mode);
@@ -155,7 +170,7 @@ public class Casa {
     //Adiciona dispositivo na casa
     private void addDevice(SmartDevice sd, double installationCost) throws DateAlreadyExistsException{
         if(this.devices.containsKey(sd.getId())){
-            throw new DateAlreadyExistsException("This device " + sd.getId() + "already exists.");
+            throw new DateAlreadyExistsException("Este dispositivo " + sd.getId() + "já existe.");
         }
         this.devices.put(sd.getId(),sd.clone());
         this.totalInstallationCost += installationCost;
@@ -169,7 +184,7 @@ public class Casa {
     //Adicionar localização
     public void addLocation(String location) throws LocationAlreadyExists {
         if(hasLocation(location)){
-           throw new LocationAlreadyExists("This location: " + location + " already exists.");
+           throw new LocationAlreadyExists("Esta divisão: " + location + " já existe.");
         }
         else {
             this.locations.put(location, new ArrayList<>());
@@ -179,7 +194,7 @@ public class Casa {
     //Adicionar um dispositivo a um cómodo
     public void addDeviceToLocation(String location, SmartDevice sd, double installationCost) throws DateAlreadyExistsException, LocationDoesntExist{
         if(!hasLocation(location)){
-            throw new LocationDoesntExist("This location: " + location + " doesnt exist.");
+            throw new LocationDoesntExist("Esta divisão: " + location + " não existe.");
         }
 
         this.locations.get(location).add(sd.getId());
@@ -202,7 +217,7 @@ public class Casa {
     public int devicesON(){
         int nDevices = 0;
         for(SmartDevice sd : this.devices.values()){
-            if(sd.lastRecentMode().equals(Mode.ON)) {
+            if(sd.lastRecentMode()==1) {
                 nDevices ++;
             }
         }
@@ -225,5 +240,11 @@ public class Casa {
     public void printLogsfromDevice(String id){
         SmartDevice sd = this.devices.get(id);
         sd.printLogs();
+    }
+
+    public void printAllDevicesIDs(){
+        for(String id : this.devices.keySet()){
+            System.out.println(id);
+        }
     }
 }

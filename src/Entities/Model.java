@@ -1,13 +1,13 @@
 package Entities;
 
 import Entities.Exceptions.*;
-import Enums.Mode;
 import Window.Window;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
-public class Model {
+public class Model implements Serializable {
 
     private Map<String, Casa> casas;
     private Map<String, Fornecedor> fornecedores;
@@ -30,7 +30,7 @@ public class Model {
     }
 
     //Construtor
-    public Model(Map<String, Casa> casas, Map<String, Fornecedor> fornecedores, Map<String, Invoice> invoices, LocalDate fromDate){
+    public Model(Map<String, Casa> casas, Map<String, Fornecedor> fornecedores, Map<String, FormulaConsumo> formulas, Map<String, Invoice> invoices, LocalDate fromDate){
         this.casas = new HashMap<>();
         for(Casa casa : casas.values()){
             this.casas.put(casa.getNIF(), casa.clone());
@@ -47,6 +47,10 @@ public class Model {
         }
 
         this.formulas = new HashMap<>();
+        for(Map.Entry<String, FormulaConsumo> fc : formulas.entrySet()){
+            this.formulas.put(fc.getKey(),fc.getValue().clone());
+        }
+
         this.commands = new ArrayList<>();
         this.fromDate = fromDate;
     }
@@ -60,26 +64,11 @@ public class Model {
         return this.fromDate;
     }
 
-    //Adicionar casa
-    public void addCasa(Casa casa) throws HouseAlreadyExists {
-        if(this.casas.containsKey(casa.getNIF())){
-            throw new HouseAlreadyExists("This house already exists.");
-        }
-        this.casas.put(casa.getNIF(),casa.clone());
-    }
-
-    //Adicionar fornecedor
-    public void addFornecedor(Fornecedor fornecedor) throws SupplierAlreadyExists {
-        if(this.fornecedores.containsKey(fornecedor.getSupplier())){
-            throw new SupplierAlreadyExists("This supplier: " + fornecedor.getSupplier() + " already exists.");
-        }
-        this.fornecedores.put(fornecedor.getSupplier(), fornecedor.clone());
-    }
 
     //Retornar custo total de instalação de um fornecedor
     public double getInstallationCost(String supplier) throws SupplierDoesntExists {
         if(!this.fornecedores.containsKey(supplier)){
-            throw new SupplierDoesntExists("This supplier: " + supplier + " doesn't exist.");
+            throw new SupplierDoesntExists("Este fornecedor: " + supplier + " não existe.");
         }
         return this.fornecedores.get(supplier).getInstallationCost();
     }
@@ -97,7 +86,7 @@ public class Model {
     //Retorna formula
     public FormulaConsumo getFormula(String formula) throws FormulaDoesntExist {
         if(!this.formulas.containsKey(formula)){
-            throw new FormulaDoesntExist("This formula doesnt exist.");
+            throw new FormulaDoesntExist("Esta fórmula não existe.");
         }
         return this.formulas.get(formula);
     }
@@ -112,7 +101,7 @@ public class Model {
             Fornecedor fornecedor = this.fornecedores.get(casa.getSupplier()); /* Fornecedor da casa */
 
             /* Calcula custo total da fatura */
-            double totalCost = fornecedor.invoiceAmount(consumption,this.fromDate,toDate,casa.devicesON(),casa.getTotalInstallationCost());
+            double totalCost = fornecedor.invoiceAmount(consumption,casa.devicesON(),casa.getTotalInstallationCost());
 
             /* Id da fatura é Data+NIF */
             String id = this.fromDate + casa.getNIF();
@@ -147,12 +136,12 @@ public class Model {
     }
 
     //String to mode
-    public Mode whichMode(String mode){
-        Mode m;
+    public int whichMode(String mode){
+        int m;
         if(mode.equals("ON")){
-            m = Mode.ON;
+            m = 1;
         }
-        else m = Mode.OFF;
+        else m = 0;
 
         return m;
     }
@@ -183,9 +172,9 @@ public class Model {
         return formulaConsumo;
     }
 
-    public void setModeAdvanced(String nif, String sd, Mode mode, LocalDate date) throws InvalidDateException, DateAlreadyExistsException{
+    public void setModeAdvanced(String nif, String sd, int mode, LocalDate date) throws InvalidDateException, DateAlreadyExistsException{
         if(this.fromDate.compareTo(date) > 0){
-            throw new InvalidDateException("Invalid date " +  date + ". It must be from " + this.fromDate);
+            throw new InvalidDateException("Data inválida " +  date + ". Deve ser a partir de " + this.fromDate);
         }
         this.casas.get(nif).setMode(sd,mode,date);
     }
@@ -226,7 +215,7 @@ public class Model {
     public void moveForward(LocalDate toDate) throws DateAlreadyExistsException, InvalidDateException{
         if(this.fromDate.compareTo(toDate) >= 0){
             //se data de inicio for igual ou maior que data de fim
-            throw new InvalidDateException("Invalid date " +  toDate + ". It must be after " + this.fromDate);
+            throw new InvalidDateException("Data inválida " +  toDate + ". Deve ser a partir de " + this.fromDate);
         }
         generateInvoices(toDate);
         runCommands();
@@ -241,11 +230,11 @@ public class Model {
             System.out.print("  ");
             linha++;
             if(linha == 5){
-                System.out.println("");
+                System.out.println();
                 linha = 0;
             }
         }
-        System.out.println("");
+        System.out.println();
     }
 
 
@@ -273,9 +262,9 @@ public class Model {
                 .append(" ")
                 .append("NIF: ").append(result.getNIF())
                 .append(" ")
-                .append("Supplier: ").append(result.getSupplier())
+                .append("Fornecedor: ").append(result.getSupplier())
                 .append(" ")
-                .append("Total Cost: ").append(String.format("%,.2f",cost)).append("\n");
+                .append("Custo total: ").append(String.format("%,.2f",cost)).append("\n");
 
 
 
@@ -328,12 +317,66 @@ public class Model {
         List<String> result = new ArrayList<>();
         int count = 1;
         for(Invoice in : invoices){
-            result.add(count + "º   " + "Owner: " + in.getOwner() + " NIF: " + in.getNif() + " Total: " + in.getTotalConsumption());
+            result.add(count + "º   " + "Dono: " + in.getOwner() + " NIF: " + in.getNif() + " Total: " + in.getTotalConsumption());
             count++;
         }
 
         return result;
     }
+
+
+
+    /* Opção de Inserir -> Podem ser feitas assim que são pedidas pelo utilizador */
+
+    /* Casa */
+    //Adicionar casa
+    public void addCasa(Casa casa) throws HouseAlreadyExists {
+
+        if(this.casas.containsKey(casa.getNIF())){
+            throw new HouseAlreadyExists("Esta casa já existe.");
+        }
+        this.casas.put(casa.getNIF(),casa.clone());
+    }
+
+
+    /* Divisão */
+    public void addLocationToHouse(String location, String nif) throws LocationAlreadyExists{
+        this.casas.get(nif).addLocation(location);
+    }
+
+    /* SmartDevice */
+    /* Quando criar o SmartDevice tem que passar a data do fromDate */
+    public void addDeviceToHouse(String nif, String location, SmartDevice sd) throws SupplierDoesntExists, LocationDoesntExist, DateAlreadyExistsException {
+        double installationCost = getInstallationCost(this.casas.get(nif).getSupplier());
+        this.casas.get(nif).addDeviceToLocation(location,sd,installationCost);
+    }
+
+    /* Fornecedor */
+    //Adicionar fornecedor
+    public void addFornecedor(Fornecedor fornecedor) throws SupplierAlreadyExists {
+        if(this.fornecedores.containsKey(fornecedor.getSupplier())){
+            throw new SupplierAlreadyExists("Este fornecedor: " + fornecedor.getSupplier() + " já existe.");
+        }
+        this.fornecedores.put(fornecedor.getSupplier(), fornecedor.clone());
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

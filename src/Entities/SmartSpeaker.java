@@ -1,7 +1,5 @@
 package Entities;
 
-import Enums.Mode;
-
 import java.time.LocalDate;
 
 public class SmartSpeaker extends SmartDevice{
@@ -19,7 +17,7 @@ public class SmartSpeaker extends SmartDevice{
     }
 
    //Construtor completo
-    public SmartSpeaker(String cod, double consumptionBase, String channel, int volume, String brand, Mode mode, LocalDate fromDate) {
+    public SmartSpeaker(String cod, double consumptionBase, String channel, int volume, String brand, int mode, LocalDate fromDate) {
         // initialise instance variables
         super(cod, mode,consumptionBase,fromDate);
         this.channel = channel;
@@ -87,6 +85,19 @@ public class SmartSpeaker extends SmartDevice{
                 this.volume == s.getVolume() &&
                 this.channel.equals(s.getChannel()) &&
                 this.brand.equals(s.getBrand()));
+    }
+
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString())
+                .append("Volume: ").append(this.volume)
+                .append(" ")
+                .append("Canal: ").append(this.channel)
+                .append(" ")
+                .append("Marca: ").append(this.brand)
+                .append("\n");
+
+        return sb.toString();
     }
 
     //Mudar volume por porcentagem

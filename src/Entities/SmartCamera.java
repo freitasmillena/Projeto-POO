@@ -1,7 +1,5 @@
 package Entities;
 
-import Enums.Mode;
-
 import java.time.LocalDate;
 
 public class SmartCamera extends SmartDevice{
@@ -19,7 +17,7 @@ public class SmartCamera extends SmartDevice{
     }
 
     //Construtor completo
-    public SmartCamera(String s, double consumptionBase, int resolutionX, int resolutionY, int filesize, Mode mode, LocalDate fromDate){
+    public SmartCamera(String s, double consumptionBase, int resolutionX, int resolutionY, int filesize, int mode, LocalDate fromDate){
         super(s, mode,consumptionBase,fromDate);
         this.resolutionX = resolutionX;
         this.resolutionY = resolutionY;
@@ -82,6 +80,17 @@ public class SmartCamera extends SmartDevice{
                 this.resolutionX == sc.getResolutionX() &&
                 this.resolutionY == sc.getResolutionY() &&
                 this.fileSize == sc.getFilesize());
+    }
+
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString())
+                .append("Resolução: ").append(this.resolutionX).append("x").append(this.resolutionY)
+                .append("\n")
+                .append("Tamanho do ficheiro: ").append(this.fileSize)
+                .append("\n");
+
+        return sb.toString();
     }
 
     //Consumo energético para câmera

@@ -1,8 +1,9 @@
 package Entities;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Invoice implements Comparable<Invoice>{
+public class Invoice implements Comparable<Invoice>, Serializable {
 
     private String id;
     private String owner;
@@ -136,16 +137,16 @@ public class Invoice implements Comparable<Invoice>{
     public String toString(){
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Owner: ").append(this.owner)
+        sb.append("Dono: ").append(this.owner)
                 .append("  NIF: ").append(this.nif)
                 .append("\n")
-                .append("Supplier: ").append(this.supplier)
+                .append("Fornecedor: ").append(this.supplier)
                 .append("\n")
-                .append("Billing period: ").append(this.fromDate).append(" to ").append(this.toDate)
+                .append("Período de faturamento: ").append(this.fromDate).append(" a ").append(this.toDate)
                 .append("\n")
-                .append("Total consumption: ").append(String.format("%,.2f",this.totalConsumption)).append(" kwh")
+                .append("Comsumo total: ").append(String.format("%,.2f",this.totalConsumption)).append(" kwh")
                 .append("\n")
-                .append("Total cost: ").append(String.format("%,.2f",this.totalCost))
+                .append("Custo total: ").append(String.format("%,.2f €",this.totalCost))
                 .append("\n");
 
         return sb.toString();

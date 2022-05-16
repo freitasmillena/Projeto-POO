@@ -1,8 +1,5 @@
 package Entities;
 
-import Enums.Mode;
-import Enums.Tone;
-
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
@@ -41,8 +38,8 @@ public class Main {
         }
 
         try {
-            c2.addDeviceToLocation("Cozinha", new SmartBulb("lampada1", Tone.COLD, 1.57, 3.57, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
-            c2.addDeviceToLocation("Jardim", new SmartBulb("lampada2", Tone.WARM, 1.57, 3.57, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
+            c2.addDeviceToLocation("Cozinha", new SmartBulb("lampada1", 0, 1.57, 3.57, 1, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
+            c2.addDeviceToLocation("Jardim", new SmartBulb("lampada2", 2, 1.57, 3.57, 1, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
         }
         catch (Exception e){
             System.out.println(e);
@@ -66,11 +63,11 @@ public class Main {
             System.out.println(e);
         }
 
-        SmartBulb sb = new SmartBulb("lampada1", Tone.COLD, 1.57, 3.57,  Mode.ON, LocalDate.parse("2022-05-12"));
+        SmartBulb sb = new SmartBulb("lampada1", 0, 1.57, 3.57,  1, LocalDate.parse("2022-05-12"));
 
         try {
-            c1.addDeviceToLocation("Quarto", new SmartCamera("camera", 2.1, 1388, 760, 20, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
-            c1.addDeviceToLocation("Sala", new SmartCamera("camera2", 2.1, 1388, 760, 20, Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
+            c1.addDeviceToLocation("Quarto", new SmartCamera("camera5", 2.1, 1388, 760, 20, 1, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
+            c1.addDeviceToLocation("Sala", new SmartCamera("camera2", 2.1, 1388, 760, 20, 1, LocalDate.parse("2022-05-12")), model.getInstallationCost(c1.getSupplier()));
         }
 
         catch (Exception e){
@@ -86,6 +83,23 @@ public class Main {
 
 
 
+        Casa c3 = new Casa("Alice", "8910", "EDP");
+
+        try {
+            c3.addLocation("Banheiro");
+            c3.addLocation("Quarto");
+            //c3.addDeviceToLocation("Banheiro", new SmartSpeaker("alexa", 2.53, "FM O DIA", 35, "JBL", Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
+           //c3.addDeviceToLocation("Quarto", new SmartSpeaker("siri", 2.53, "AM O DIA", 35, "Sony", Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
+            model.addCasa(c3);
+        }
+        catch (Exception e){
+
+        }
+
+        SmartSpeaker sp = new SmartSpeaker("alexa", 2.53, "FM O DIA", 35, "JBL", 1, LocalDate.parse("2022-05-12"));
+        SmartCamera sc = new SmartCamera("camera5", 2.1, 1388, 760, 20, 1, LocalDate.parse("2022-05-12"));
+
+
         model.generateInvoices(LocalDate.parse("2022-05-15"));
         model.printInvoices();
 
@@ -97,38 +111,19 @@ public class Main {
 
         System.out.println(list.size());
 
-
-
-        /*
-        Casa c3 = new Casa("Alice", "8910", "GoldEnergy");
-
-        c3.addLocation("Banheiro");
-        c3.addLocation("Quarto");
-        c3.addDeviceToLocation("Banheiro", new SmartSpeaker("alexa", 2.53, "FM O DIA", 35, "JBL", Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
-        c3.addDeviceToLocation("Quarto", new SmartSpeaker("siri", 2.53, "AM O DIA", 35, "Sony", Mode.ON, LocalDate.parse("2022-05-12")), model.getInstallationCost(c2.getSupplier()));
-
-        model.addCasa(c3);
-        model.generateInvoices(LocalDate.parse("2022-05-15"));
-
-        model.printInvoices();
-
-
-        String cod, int consumptionBase, String channel, int volume, String brand
-        SortedMap<LocalDate, Log> logs = new TreeMap<LocalDate, Log>();
-        logs.put(LocalDate.parse("2022-05-12"), new Log(LocalDate.parse("2022-05-12"), Mode.ON));
-        logs.put(LocalDate.parse("2022-05-13"), new Log(LocalDate.parse("2022-05-13"), Mode.ON));
-        logs.put(LocalDate.parse("2022-05-14"), new Log(LocalDate.parse("2022-05-14"), Mode.ON));
-        logs.put(LocalDate.parse("2022-05-15"), new Log(LocalDate.parse("2022-05-15"), Mode.ON));
-        logs.put(LocalDate.parse("2022-05-16"), new Log(LocalDate.parse("2022-05-16"), Mode.ON));
-
-        for(Log l : logs.values()){
-            System.out.println(l.getFromDate());
+        try {
+            System.out.println(model.higherTotalCost());
+            System.out.println(model.hasMoreInvoices());
+            System.out.println(model.invoicesPerSupplier("Luzboa"));
         }
-        System.out.println(logs.get(LocalDate.parse("2022-05-13")));
+        catch (Exception e){
 
-        System.out.println("Tail is " + logs.tailMap(LocalDate.parse("2022-05-13")));
-        System.out.println("Tail is " + logs.tailMap(LocalDate.parse("2022-05-14")));
+        }
 
-         */
+
+        System.out.println(sb);
+        System.out.println(sp);
+        System.out.println(sc);
+
     }
 }

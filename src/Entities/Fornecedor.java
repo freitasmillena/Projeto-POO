@@ -1,14 +1,12 @@
 package Entities;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
-import static java.time.temporal.ChronoUnit.DAYS;
 
-public class Fornecedor {
+public class Fornecedor implements Serializable {
 
     private String supplier;
     private final double dailyCost = 2.5;
@@ -114,7 +112,9 @@ public class Fornecedor {
     //toString
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append("Supplier: ").append(this.supplier)
+        sb.append("Fornecedor: ").append(this.supplier)
+                .append(" ").append("Fórmula: ").append(this.formulaConsumo.toString())
+                .append(" ").append("Custo de instalação: ").append(this.installationCost)
                 .append("\n");
 
         return sb.toString();
@@ -131,10 +131,11 @@ public class Fornecedor {
     }
 
     //Calcula valor da fatura de acordo com sua fórmula de cálculo
-    public double invoiceAmount(double consumption, LocalDate fromDate, LocalDate toDate, double nDevices, double totalInstallationCost){
+    public double invoiceAmount(double consumption,double nDevices, double totalInstallationCost){
 
         return formulaConsumo.calculaTotal(this.taxes,consumption,this.dailyCost, nDevices) + totalInstallationCost;
     }
+
 
 
 }
