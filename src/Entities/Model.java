@@ -3,7 +3,7 @@ package Entities;
 import Entities.Exceptions.*;
 import Window.Window;
 
-import java.io.Serializable;
+import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -222,19 +222,18 @@ public class Model implements Serializable {
     }
 
     // Imprime até 5 NIF's por linha no terminal
-    public void printNIFs(){
+    public List<String> printNIFs(){
         int linha = 0;
-        Window.inicialWriteNIF();
+        List<String> strings = new ArrayList<>();
         for(Casa casa : this.casas.values()){
-            System.out.print(casa.getNIF());
-            System.out.print("  ");
+            strings.add(casa.getNIF() + "  ");
             linha++;
             if(linha == 5){
-                System.out.println();
+                strings.add("\n");
                 linha = 0;
             }
         }
-        System.out.println();
+        return strings;
     }
 
 
@@ -289,7 +288,7 @@ public class Model implements Serializable {
             }
         }
 
-        return result.toString();
+        return result.toString().concat("Quantidade: " + n);
     }
 
     //listar as facturas emitidas por um comercializador
@@ -362,9 +361,25 @@ public class Model implements Serializable {
 
 
 
+    //Salvar em ficheiro objeto
+    public void saveObject(String fileName) throws FileNotFoundException, IOException {
+        FileOutputStream fos = new FileOutputStream(fileName);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(this);
+        oos.flush();
+        oos.close();
+    }
 
-
-
+ /* PARA GUI !!!!!!!!!!!!
+ func pra ler o ficheiro objeto :)
+ public static Model loadObject(String fileName) throws FileNotFoundException, IOException, ClassNotFoundException{
+        FileInputStream fis = new FileInputStream(fileName);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        Model m = (Model) ois.readObject();
+        ois.close();
+        return m;
+    }
+  */
 
 
 
