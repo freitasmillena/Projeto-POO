@@ -178,7 +178,9 @@ public class Parser {
                     break;
                 
                 case "changeSupplier": //data changeSupplier casa fornecedor
-
+                    command = new Command(date, linhaPartida[1], linhaPartida[2], linhaPartida[3]);
+                    model.addComandBasic(command);
+                    break;
                 case "changeFormula": //data changeFormula fornecedor formula
                     command = new Command(date, linhaPartida[1], linhaPartida[2], linhaPartida[3]);
                     model.addComandBasic(command);
