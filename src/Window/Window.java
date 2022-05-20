@@ -1,5 +1,8 @@
 package Window;
 
+import Entities.Model;
+import Entities.Exceptions.NoInvoicesAvailable;
+
 // Classe auxiliar para a criação (ou eliminação) de conteúdo 
 public class Window {
     // Vamos garantir que a janela do terminal está totalmente limpa
@@ -41,7 +44,21 @@ public class Window {
 
     public static void inicialWriteNIF() {
         System.out.println("");
-        System.out.println("-------------| Lista de NIFs |-------------");
+        System.out.println("------------| Lista de NIFs dos donos das Casas |------------");
+        System.out.println("");
+    }
+
+    public static void inicialWriteSupplier() {
+        System.out.println("");
+        System.out.println("-----------| Lista dos Nomes dos Comercializadores |-----------");
+        System.out.println("");
+    }
+
+    public static void fimLista() {
+        System.out.println("");
+        System.out.println("****************");
+        System.out.println("* FIM da Lista *");
+        System.out.println("****************");
         System.out.println("");
     }
 
@@ -65,12 +82,34 @@ public class Window {
         System.out.println("");
     }
 
-    public static void estatistica1() {
-
+    public static void estatistica1(Model model) {
+        System.out.println("---| 1. Casa que mais gastou até à data atual da simulação |---");
+        System.out.println("");
+        String nif_casa;
+        try {
+            nif_casa = model.higherTotalCost();
+            System.out.println("Resultado (NIF da Casa): " + nif_casa);
+            System.out.println("");
+        }
+        catch (NoInvoicesAvailable e) {
+            System.out.println(e.getMessage());
+            System.out.println("");
+        }
     }
 
-    public static void estatistica2() {
-        
+    public static void estatistica2(Model model) {
+        System.out.println("---| 2. Comercializador com maior volume de faturação |---");
+        System.out.println("");
+        String nome_comercializador;
+        try {
+            nome_comercializador = model.hasMoreInvoices();
+            System.out.println("Nome de fornecedor: " + nome_comercializador);
+            System.out.println("");
+        }
+        catch (NoInvoicesAvailable e) {
+            System.out.println(e.getMessage());
+            System.out.println("");
+        }        
     }
 
     public static void resultsEstatisticas() {

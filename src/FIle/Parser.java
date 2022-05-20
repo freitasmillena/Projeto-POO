@@ -24,14 +24,12 @@ import Entities.SmartCamera;
 import Entities.SmartSpeaker;
 import Entities.Command;
 import Entities.Exceptions.*;
-import Enums.Mode;
-import Enums.Tone;
 
 public class Parser {
 
 
-    public boolean parseLogs(Model model) throws FileNotFoundException, SupplierAlreadyExists, HouseAlreadyExists, LocationAlreadyExists, DateAlreadyExistsException, LocationDoesntExist {
-        List<String> linhas = lerFicheiro("logs.txt");
+    public boolean parseLogs(Model model, String fileName) throws FileNotFoundException, SupplierAlreadyExists, HouseAlreadyExists, LocationAlreadyExists, DateAlreadyExistsException, LocationDoesntExist {
+        List<String> linhas = lerFicheiro(fileName);
         boolean end_program = false; // Caso apareceça um registo inválido, paramos o programa
         String[] linhaPartida;
         String fornecedor_string = null; // ainda não foi inserido nenhum fornecedor
@@ -41,9 +39,7 @@ public class Parser {
         LocalDate data = model.getFromDate();
 
         // Para fornecer os id's dos vários dispsoitivos
-        int id_smartbulb = 1;
-        int id_smartcamera = 1;
-        int id_smartspeaker = 1;
+        int id_device = 1;
 
         for (String linha : linhas) {
             linhaPartida = linha.split(":", 2);
@@ -80,11 +76,11 @@ public class Parser {
                             fornecedor.setFormulaConsumo(f6);                
                             break;
                         default:
+                            end_program = true;
                             break;
                     }
                     fornecedor.setInstallationCost(randomCustoInstalacao());
                     model.addFornecedor(fornecedor);
-                    break;
 
                 case "Casa":
                     if (casaMaisRecente != null) model.addCasa(casaMaisRecente);
@@ -94,10 +90,7 @@ public class Parser {
                         break;
                     }
                     casaMaisRecente = parseCasa(linhaPartida[1]);
-                    id_smartbulb = 1;
-                    id_smartcamera = 1;
-                    id_smartspeaker = 1;
-                    break;
+                    id_device = 1;
 
                 case "Divisão":
                     if (casaMaisRecente == null) { 
@@ -107,7 +100,6 @@ public class Parser {
                     }
                     divisao_string = linhaPartida[1];
                     casaMaisRecente.addLocation(divisao_string);
-                    break;
 
                 case "SmartBulb":
                     if (divisao_string == null) { 
@@ -115,10 +107,9 @@ public class Parser {
                         end_program = true; 
                         break;
                     }
-                    SmartBulb sb = parseSmartBulb(linhaPartida[1], data, id_smartbulb);
+                    SmartBulb sb = parseSmartBulb(linhaPartida[1], data, id_device);
                     casaMaisRecente.addDeviceToLocation(divisao_string, sb, sb.getConsumptionBase());
-                    id_smartbulb++;
-                    break;
+                    id_device++;
 
                 case "SmartSpeaker":
                     if (divisao_string == null) { 
@@ -126,10 +117,9 @@ public class Parser {
                         end_program = true; 
                         break;
                     }
-                    SmartSpeaker ss = parseSmartSpeaker(linhaPartida[1], data, id_smartspeaker);
+                    SmartSpeaker ss = parseSmartSpeaker(linhaPartida[1], data, id_device);
                     casaMaisRecente.addDeviceToLocation(divisao_string, ss, ss.getConsumptionBase());
-                    id_smartspeaker++;
-                    break;
+                    id_device++;
                     
                 case "SmartCamera":
                     if (divisao_string == null) { 
@@ -137,10 +127,9 @@ public class Parser {
                         end_program = true; 
                         break;
                     }
-                    SmartCamera sc = parseSmartCamera(linhaPartida[1], data, id_smartcamera);
+                    SmartCamera sc = parseSmartCamera(linhaPartida[1], data, id_device);
                     casaMaisRecente.addDeviceToLocation(divisao_string, sc, sc.getConsumptionBase());
-                    id_smartcamera++;
-                    break;
+                    id_device++;
 
                 default:
                     System.out.println("Linha inválida no ficheiro 'logs.txt'.");
@@ -153,9 +142,9 @@ public class Parser {
     }
 
     // Paraser para ler os comandos do ficheiro de automatização da simulação
-    public static void parseAdvanced(Model model, String fileName) throws FileNotFoundException {
-        // PREENCHER ------------------------------------------------------------------------------------------------------------
-        List<String> linhas = lerFicheiro(fileName); //VER SE É POSSÍVEL PEDIR O CAMINHO DO FICHEIRO AO UTILIZADOR QUANDO SELECIONAR A VERSAO AUTOMATIZADA
+    public static boolean parseAdvanced(Model model, String fileName) throws FileNotFoundException {
+
+        List<String> linhas = lerFicheiro(fileName); 
         boolean end_program = false; // Caso apareceça um registo inválido, paramos o programa
         String[] linhaPartida;
 
@@ -175,31 +164,29 @@ public class Parser {
                     catch (InvalidDateException | DateAlreadyExistsException e) {
                         System.out.println(e.getMessage());
                     }
-                    break;
                 
                 case "changeSupplier": //data changeSupplier casa fornecedor
-                    command = new Command(date, linhaPartida[1], linhaPartida[2], linhaPartida[3]);
-                    model.addComandBasic(command);
-                    break;
                 case "changeFormula": //data changeFormula fornecedor formula
                     command = new Command(date, linhaPartida[1], linhaPartida[2], linhaPartida[3]);
                     model.addComandBasic(command);
-                    break;
 
                 case "generateInvoices": //data generateInvoices
                     try {
                         model.moveForward(date);
-                    } catch (DateAlreadyExistsException | InvalidDateException e) {
-                        System.out.println(e.getMessage());
-                    } catch (Exception e){
+                    }
+                    catch (DateAlreadyExistsException | InvalidDateException e) {
                         System.out.println(e.getMessage());
                     }
+                    catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+                
+                default: // Parar o programa
+                    end_program = true;
             }
-
         }
-
+        return end_program;
     }
-
 
 
     public static List<String> lerFicheiro(String nomeFich) throws FileNotFoundException {
@@ -208,6 +195,7 @@ public class Parser {
             lines = Files.readAllLines(Paths.get(nomeFich), StandardCharsets.UTF_8); 
         }
         catch(IOException exc) { 
+            System.out.println(exc.getMessage());
             lines = new ArrayList<>(); 
         }
         return lines;

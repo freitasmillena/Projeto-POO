@@ -1,11 +1,14 @@
 package Entities;
 
 import Entities.Exceptions.*;
-import Window.Window;
-
 import java.io.*;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class Model implements Serializable {
 
@@ -89,6 +92,10 @@ public class Model implements Serializable {
             throw new FormulaDoesntExist("Esta fórmula não existe.");
         }
         return this.formulas.get(formula);
+    }
+
+    public boolean hasCasa(String nif_casa) {
+        return this.casas.containsKey(nif_casa);
     }
 
     //Avançar com a data gera faturas
@@ -236,6 +243,21 @@ public class Model implements Serializable {
         return strings;
     }
 
+    // Imprime até 2 nomes de Comercializadores
+    public List<String> printSuppliers() {
+        int linha = 0;
+        List<String> strings = new ArrayList<>();
+        for(String fornecedor : this.fornecedores.keySet()){
+            strings.add(fornecedor + "  ");
+            linha++;
+            if(linha == 3){
+                strings.add("\n");
+                linha = 0;
+            }
+        }
+        return strings;
+    }
+
 
     /* Queries estatísticas */
 
@@ -359,6 +381,36 @@ public class Model implements Serializable {
         this.fornecedores.put(fornecedor.getSupplier(), fornecedor.clone());
     }
 
+    // Verifica se o modelo tem o fornecedor recebido
+    public boolean verifyFornecedor(String name_supplier) {
+        return !this.fornecedores.containsKey(name_supplier);
+    }
+
+    // Ligar todos os dispotivos de todas as casas (ON)
+    public void setAllDeviceON (String nif_casa) {
+        for (Casa casa : this.casas.values()) {
+            try {
+                casa.setAllMode(1, this.fromDate);
+            }
+            catch (DateAlreadyExistsException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    // Desligar todos os dispotivos de todas as casas (OFF)
+    public void setAllDeviceOFF (String nif_casa) {
+        for (Casa casa : this.casas.values()) {
+            try {
+                casa.setAllMode(0, this.fromDate);
+            }
+            catch (DateAlreadyExistsException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    // Inverter o Modo (ON / OFF) de um dispositivo
 
 
     //Salvar em ficheiro objeto
@@ -370,16 +422,26 @@ public class Model implements Serializable {
         oos.close();
     }
 
- /* PARA GUI !!!!!!!!!!!!
- func pra ler o ficheiro objeto :)
- public static Model loadObject(String fileName) throws FileNotFoundException, IOException, ClassNotFoundException{
+    public void turnOpossite(LocalDate fromDate, String nif_casa, String id_device) {
+        try {
+            this.casas.get(nif_casa).turnOpossiteDeviceLocation(fromDate, id_device);
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    // funcão pra ler o ficheiro
+    public static Model loadObject(String fileName) throws FileNotFoundException, IOException, ClassNotFoundException{
         FileInputStream fis = new FileInputStream(fileName);
         ObjectInputStream ois = new ObjectInputStream(fis);
         Model m = (Model) ois.readObject();
         ois.close();
         return m;
     }
-  */
+
+
+
 
 
 

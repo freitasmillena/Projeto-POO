@@ -26,7 +26,6 @@ public class Casa implements Serializable {
         this.devices = new TreeMap<>();
         this.locations = new HashMap<>();
         this.totalInstallationCost = 0;
-
     }
 
     //Construtor completo
@@ -37,7 +36,6 @@ public class Casa implements Serializable {
         this.locations = new HashMap<>();
         this.supplier = fornecedor;
         this.totalInstallationCost = 0;
-
     }
 
     //Construtor de cópia
@@ -48,7 +46,6 @@ public class Casa implements Serializable {
         this.locations = casa.getLocations();
         this.totalInstallationCost = casa.getTotalInstallationCost();
         this.supplier = casa.getSupplier();
-
     }
 
     //Getters e Setters
@@ -114,7 +111,7 @@ public class Casa implements Serializable {
 
 
     //Clone
-    public Casa  clone(){
+    public Casa clone(){
         return new Casa(this);
     }
 
@@ -155,6 +152,11 @@ public class Casa implements Serializable {
         for(SmartDevice sm : this.devices.values()){
             sm.addLog(fromDate, mode);
         }
+    }
+
+    // Mudar o modo de um dispositivo para o seu opsoto
+    public void turnOpossiteDeviceLocation(LocalDate fromDate, String id_device) throws DateAlreadyExistsException {
+        this.devices.get(id_device).oppositeMode(fromDate);
     }
 
     //Mudar o modo de todos os dispositivos de um cómodo

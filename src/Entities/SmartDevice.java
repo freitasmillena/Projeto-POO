@@ -28,7 +28,6 @@ abstract class SmartDevice implements Serializable {
         this.consumptionBase = consumptionBase;
         this.logs = new TreeMap<>();
         this.logs.put(fromDate,mode);
-
     }
 
     //Construtor sem Mode
@@ -44,6 +43,7 @@ abstract class SmartDevice implements Serializable {
         this.id = sm.getId();
         this.consumptionBase = sm.getConsumptionBase();
         this.logs = sm.getLogs();
+
     }
 
     //Getters e Setters
@@ -121,12 +121,31 @@ abstract class SmartDevice implements Serializable {
         return result;
     }
 
-   //Modo atual do dispositivo
-   public int lastRecentMode(){
+    //Modo atual do dispositivo
+    public int lastRecentMode(){
         Map.Entry<LocalDate, Integer> last = this.logs.lastEntry();
         int mode = last.getValue();
         return mode;
-   }
+    }
+
+    public void oppositeMode(LocalDate fromDate) {
+        if (this.lastRecentMode() == 0) { 
+            try { 
+                this.addLog(fromDate, 1);
+            }
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        else { 
+            try { 
+                this.addLog(fromDate, 0);
+            }
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
 
 
     //Método para percorrer os logs e calcular o consumo total para o dispositivo no intervalo de datas da fatura. toDate exclusive
