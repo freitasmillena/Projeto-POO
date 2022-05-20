@@ -6,18 +6,7 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-import Entities.Casa;
-import Entities.Formula1;
-import Entities.Formula2;
-import Entities.Formula3;
-import Entities.Formula4;
-import Entities.Formula5;
-import Entities.Formula6;
-import Entities.Fornecedor;
-import Entities.Model;
-import Entities.SmartBulb;
-import Entities.SmartCamera;
-import Entities.SmartSpeaker;
+import Entities.*;
 import Entities.Exceptions.DateAlreadyExistsException;
 import Entities.Exceptions.HouseAlreadyExists;
 import Entities.Exceptions.HouseDoesntExists;
@@ -38,6 +27,22 @@ public class Controller extends Exception {
         Scanner scanner = new Scanner(System.in);
 
         Model model = new Model();
+
+        //Adicionar fórmulas ao modelo
+        FormulaConsumo f1 = new Formula1();
+        FormulaConsumo f2 = new Formula2();
+        FormulaConsumo f3 = new Formula3();
+        FormulaConsumo f4 = new Formula4();
+        FormulaConsumo f5 = new Formula5();
+        FormulaConsumo f6 = new Formula6();
+
+        model.addFormula("Formula1", f1);
+        model.addFormula("Formula2", f2);
+        model.addFormula("Formula3", f3);
+        model.addFormula("Formula4", f4);
+        model.addFormula("Formula5", f5);
+        model.addFormula("Formula6", f6);
+
         LocalDate today = LocalDate.now();
         model.setFromDate(today); // definir a data de execução do programa como a data inicial do Model
 
