@@ -42,7 +42,7 @@ public class Window {
         System.out.println("");
     }
 
-    public static void inicialWriteNIF() {
+    public void inicialWriteNIF() {
         System.out.println("");
         System.out.println("------------| Lista de NIFs dos donos das Casas |------------");
         System.out.println("");
@@ -128,6 +128,26 @@ public class Window {
         System.out.println("   *-***************************-*");
 
         System.out.println("");
+        System.out.println("");
+    }
+
+    public static void guardarPrograma() {
+        System.out.println("");
+        System.out.println("**********************************");
+        System.out.println("* A guardar o estado do programa *");
+        System.out.println("**********************************");
+        System.out.println("");
+        System.out.println("   Por favor, espere!");
+        System.out.println("");
+    }
+
+    public static void carregarPrograma() {
+        System.out.println("");
+        System.out.println("***********************************");
+        System.out.println("* A carregar o estado do programa *");
+        System.out.println("***********************************");
+        System.out.println("");
+        System.out.println("   Por favor, espere!");
         System.out.println("");
     }
 }

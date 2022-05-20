@@ -19,6 +19,7 @@ public class Menu {
         System.out.println("");
         System.out.println("-> 1) Automatizar a simulação");
         System.out.println("-> 2) Escrever dados manualmente");
+        System.out.println("-> 3) Guardar o estado do programa");
         System.out.println("-> (Qualquer outra tecla) SAIR");
         System.out.println("");
         int opcao_utilizador;
@@ -41,7 +42,7 @@ public class Menu {
     }
  
 
-    public static int menuUtilizadorManual(Scanner scanner, boolean avancou_tempo) {
+    public static int menuUtilizadorManual(Scanner scanner) {
         Window.clear();
         System.out.println("");
         System.out.println("-----------| MENU - Escrever Manualmente |-----------");
@@ -49,10 +50,9 @@ public class Menu {
         System.out.println("-> 1) Inserir dados");
         System.out.println("-> 2) Alterar dados");
         System.out.println("-> 3) Avançar no tempo");
-        if (avancou_tempo) {
-            System.out.println("-> 4) Apresentar TODAS as Faturas");
-            System.out.println("-> 5) Estatísticas");
-        }
+        System.out.println("-> 4) Guardar o estado do programa");
+        System.out.println("-> 5) Apresentar TODAS as Faturas");
+        System.out.println("-> 6) Estatísticas");
         System.out.println("-> (Qualquer outra tecla) SAIR");
         System.out.println("");
         int opcao_utilizador;
@@ -104,7 +104,7 @@ public class Menu {
         }
     }
 
-    public static int menuInserir(Scanner scanner) {
+    public int menuInserir(Scanner scanner) {
         Window.clear();
         System.out.println("");
         System.out.println("-------| MENU - Inserir |-------");
@@ -289,7 +289,7 @@ public class Menu {
         }
     }
 
-    public static String menuFornecedorNIF(Scanner scanner, Model model) {
+    public String menuFornecedorNIF(Scanner scanner, Model model) {
         Window.clear();
         System.out.println("");
         System.out.println("-------| MENU - Alterar - Fornecedor |-------");
@@ -325,6 +325,34 @@ public class Menu {
         System.out.println("(Escreva 0 para visaulizar todas as marcas)");
         while (true) {
             System.out.print("Escreva o nome da marca do NOVO Fornecedor/Comercializador da casa: ");
+            try {
+
+                name_fornecedor = scanner.nextLine();
+                System.out.println("");
+            }
+            catch (java.util.InputMismatchException e) {
+                System.out.println("");
+                System.out.println("");
+                System.out.println(Cores.VERMELHO + "!!! Tipo Inválido !!! Por favor, insira um valor válido." + Cores.RESET);
+                System.out.println("");
+                continue;
+            }
+            
+            if (name_fornecedor.equals("0")) { 
+                System.out.println(Arrays.toString(model.printSuppliers().toArray()));
+                continue;
+            }
+            break;
+        } 
+        return name_fornecedor;
+    }
+
+    public static String menuEscolherFornecedor(Scanner scanner, Model model) {
+        System.out.println("");
+        String name_fornecedor;
+        System.out.println("(Escreva 0 para visaulizar todas as marcas de comercializadores)");
+        while (true) {
+            System.out.print("Escreva o nome da marca do Fornecedor/Comercializador da casa: ");
             try {
 
                 name_fornecedor = scanner.nextLine();
@@ -436,7 +464,7 @@ public class Menu {
         }
     }
 
-    public static LocalDate menuEstatistica4ToDate(Scanner scanner) {
+    public LocalDate menuEstatistica4ToDate(Scanner scanner) {
         LocalDate data_final;
 
         while(true) {
@@ -463,9 +491,10 @@ public class Menu {
     public static int menuOpcoesAutomatizacao(Scanner scanner) {
         Window.clear();
         System.out.println("");
-        System.out.println("-------| MENU - Alterar |-------");
+        System.out.println("-------| MENU - Automatização |-------");
         System.out.println("");
         System.out.println("-> 1) Estatísticas");
+        System.out.println("-> 2) Guardar o estado do programa");
         System.out.println("-> (Qualquer outra tecla) SAIR");
         System.out.println("");
         int opcao_utilizador;
@@ -490,7 +519,7 @@ public class Menu {
 
 
 
-    public static int menuDispositivo(Scanner scanner) {
+    public int menuDispositivo(Scanner scanner) {
         int opcao_utilizador;
         System.out.println("");
         System.out.println("(Escreva 0 para ver a lista de todos os dispostivos da casa atual)");
@@ -509,6 +538,38 @@ public class Menu {
             }
             
             return opcao_utilizador;
+        }
+    }
+
+    public static int menuFormula (Scanner scanner) {
+        System.out.println("");
+        System.out.println("-------| MENU - Formula |-------");
+        System.out.println("");
+        System.out.println("-> 1) Formula1");
+        System.out.println("-> 2) Formula2");
+        System.out.println("-> 3) Formula3");
+        System.out.println("-> 4) Formula4");
+        System.out.println("-> 5) Formula5");
+        System.out.println("-> 6) Formula6");
+        System.out.println("-> (Qualquer outra tecla) SAIR");
+        System.out.println("");
+        int opcao_utilizador;
+
+        while (true) {
+            System.out.print("Selecione a opção pretendida: ");
+            try {
+
+                opcao_utilizador = Integer.parseInt(scanner.nextLine());
+                System.out.println("");
+                return opcao_utilizador;
+            }
+            catch (java.util.InputMismatchException e) {
+                System.out.println("");
+                System.out.println("");
+                System.out.println(Cores.VERMELHO + "!!! Tipo Inválido !!! Por favor, insira um valor válido." + Cores.RESET);
+                System.out.println("");
+                continue;
+            }
         }
     }
 }

@@ -31,7 +31,6 @@ public class Parser {
     public boolean parseLogs(Model model, String fileName) throws FileNotFoundException, SupplierAlreadyExists, HouseAlreadyExists, LocationAlreadyExists, DateAlreadyExistsException, LocationDoesntExist, SupplierDoesntExists {
         List<String> linhas = lerFicheiro(fileName);
         boolean end_program = false; // Caso apareceça um registo inválido, paramos o programa
-        String[] linhaPartida;
         String fornecedor_string = null; // ainda não foi inserido nenhum fornecedor
         String divisao_string = null; // ainda não foi inserida nenhuma divisão de uma casa
         Casa casaMaisRecente = null; // ainda não foi inserida nenhuma casa
@@ -40,10 +39,12 @@ public class Parser {
 
         // Para fornecer os id's dos vários dispsoitivos
         int id_device = 1;
-
+        
         for (String linha : linhas) {
+            // System.out.println(linha);
+            String[] linhaPartida;
             linhaPartida = linha.split(":", 2);
-            switch(linhaPartida[0]){
+            switch(linhaPartida[0]) {
 
                 case "Fornecedor":
                     fornecedor_string = linhaPartida[1];
@@ -57,33 +58,35 @@ public class Parser {
                             break;
                         case 2:
                             Formula2 f2 = new Formula2();
-                            fornecedor.setFormulaConsumo(f2);            
-                            break;
+                            fornecedor.setFormulaConsumo(f2);
+                            break;       
                         case 3:
                             Formula3 f3 = new Formula3();
-                            fornecedor.setFormulaConsumo(f3);            
-                            break;
+                            fornecedor.setFormulaConsumo(f3); 
+                            break;           
                         case 4:
                             Formula4 f4 = new Formula4();
-                            fornecedor.setFormulaConsumo(f4);                
-                            break;
+                            fornecedor.setFormulaConsumo(f4); 
+                            break;               
                         case 5:
                             Formula5 f5 = new Formula5();
-                            fornecedor.setFormulaConsumo(f5);                
-                            break;
+                            fornecedor.setFormulaConsumo(f5);   
+                            break;             
                         case 6:
                             Formula6 f6 = new Formula6();
-                            fornecedor.setFormulaConsumo(f6);                
-                            break;
+                            fornecedor.setFormulaConsumo(f6);    
+                            break;            
                         default:
                             end_program = true;
-                            break;
                     }
                     fornecedor.setInstallationCost(randomCustoInstalacao());
                     model.addFornecedor(fornecedor);
-
+                    break;
                 case "Casa":
-                    if (casaMaisRecente != null) model.addCasa(casaMaisRecente);
+                    if (casaMaisRecente != null) { 
+                        model.addCasa(casaMaisRecente);
+                        casaMaisRecente = null;
+                    }
                     if (fornecedor_string == null) { 
                         System.out.println("Linha inválida no ficheiro 'logs.txt'.");
                         end_program = true; 
@@ -91,8 +94,8 @@ public class Parser {
                     }
                     casaMaisRecente = parseCasa(linhaPartida[1]);
                     id_device = 1;
-
-                case "Divisão":
+                    break;
+                case "Divisao":
                     if (casaMaisRecente == null) { 
                         System.out.println("Linha inválida no ficheiro 'logs.txt'.");
                         end_program = true;
@@ -100,7 +103,7 @@ public class Parser {
                     }
                     divisao_string = linhaPartida[1];
                     casaMaisRecente.addLocation(divisao_string);
-
+                    break;
                 case "SmartBulb":
                     if (divisao_string == null) { 
                         System.out.println("Linha inválida no ficheiro 'logs.txt'.");
@@ -110,6 +113,7 @@ public class Parser {
                     SmartBulb sb = parseSmartBulb(linhaPartida[1], data, id_device);
                     casaMaisRecente.addDeviceToLocation(divisao_string, sb, model.getInstallationCost(casaMaisRecente.getSupplier()));
                     id_device++;
+                    break;
 
                 case "SmartSpeaker":
                     if (divisao_string == null) { 
@@ -120,7 +124,7 @@ public class Parser {
                     SmartSpeaker ss = parseSmartSpeaker(linhaPartida[1], data, id_device);
                     casaMaisRecente.addDeviceToLocation(divisao_string, ss, model.getInstallationCost(casaMaisRecente.getSupplier()));
                     id_device++;
-                    
+                    break;
                 case "SmartCamera":
                     if (divisao_string == null) { 
                         System.out.println("Linha inválida no ficheiro 'logs.txt'.");
@@ -130,14 +134,14 @@ public class Parser {
                     SmartCamera sc = parseSmartCamera(linhaPartida[1], data, id_device);
                     casaMaisRecente.addDeviceToLocation(divisao_string, sc, model.getInstallationCost(casaMaisRecente.getSupplier()));
                     id_device++;
-
+                    break;
                 default:
                     System.out.println("Linha inválida no ficheiro 'logs.txt'.");
-                    break;
             }
-            if (casaMaisRecente != null) model.addCasa(casaMaisRecente);
             if (end_program == true) break;
         }
+        
+        if (casaMaisRecente != null) model.addCasa(casaMaisRecente);
         return end_program;
     }
 
@@ -153,7 +157,7 @@ public class Parser {
         for (String linha : linhas) {
             linhaPartida = linha.split(" ");
             date = LocalDate.parse(linhaPartida[0]);
-            System.out.println(date + " " + linhaPartida[1]);
+            // System.out.println(date + " " + linhaPartida[1]);
             switch (linhaPartida[1]) {
 
                 case "setMode" : //data setMode casa dispositivo mode
@@ -164,12 +168,12 @@ public class Parser {
                     catch (InvalidDateException | DateAlreadyExistsException e) {
                         System.out.println(e.getMessage());
                     }
-                
+                    break;
                 case "changeSupplier": //data changeSupplier casa fornecedor
                 case "changeFormula": //data changeFormula fornecedor formula
                     command = new Command(date, linhaPartida[1], linhaPartida[2], linhaPartida[3]);
                     model.addComandBasic(command);
-
+                    break;
                 case "generateInvoices": //data generateInvoices
                     try {
                         model.moveForward(date);
@@ -180,7 +184,7 @@ public class Parser {
                     catch (Exception e){
                         System.out.println(e.getMessage());
                     }
-                
+                    break;
                 default: // Parar o programa
                     end_program = true;
             }
@@ -201,7 +205,7 @@ public class Parser {
         return lines;
     }
 
-    public static Casa parseCasa(String input){
+    public Casa parseCasa(String input){
         String[] campos = input.split(",");
         String nome = campos[0];
         String nif = campos[1];
@@ -210,7 +214,7 @@ public class Parser {
         return casa;
     }
 
-    private static SmartBulb parseSmartBulb(String input, LocalDate data, int id) {
+    private SmartBulb parseSmartBulb(String input, LocalDate data, int id) {
         String[] campos = input.split(",");
         String tone_string = campos[0];
         double dimensao = Double.parseDouble(campos[1]);
@@ -227,12 +231,12 @@ public class Parser {
         return sb;
     }
 
-    private static SmartSpeaker parseSmartSpeaker(String input, LocalDate data, int id) {
+    private SmartSpeaker parseSmartSpeaker(String input, LocalDate data, int id) {
         String[] campos = input.split(",");
         int volume = Integer.parseInt(campos[0]);
-        String canal = campos[2];
-        String marca = campos[3];
-        double consumo = Double.parseDouble(campos[4]);
+        String canal = campos[1];
+        String marca = campos[2];
+        double consumo = Double.parseDouble(campos[3]);
 
         int mode;
         int mode_number = randomMode();
@@ -243,13 +247,14 @@ public class Parser {
         return ss;
     }
 
-    private static SmartCamera parseSmartCamera(String input, LocalDate data, int id) {
+    private SmartCamera parseSmartCamera(String input, LocalDate data, int id) {
         String[] campos = input.split(",");
         String resolucao = campos[0];
         
         String[] resolucoes = resolucao.split("x");
-        int resolucaoX = Integer.parseInt(resolucoes[1].substring(1, resolucoes[0].length() -1));
-        int resolucaoY = Integer.parseInt(resolucoes[2].substring(0, resolucoes[1].length() -2));
+
+        int resolucaoX = Integer.parseInt(resolucoes[0].substring(1, resolucoes[0].length() -1));
+        int resolucaoY = Integer.parseInt(resolucoes[1].substring(0, resolucoes[1].length() -2));
 
         int fileSize = Integer.parseInt(campos[1]);
         double consumo = Double.parseDouble(campos[2]);
@@ -283,7 +288,7 @@ public class Parser {
     }
 
     // cria uma variável Tone, a partir do tone recebido pela função
-    public static int parseTone(String s) {
+    public int parseTone(String s) {
         int tone;
         if (s.equals("Warm")) tone = 2;
         else if (s.equals("Neutral")) tone = 1;
@@ -297,7 +302,7 @@ public class Parser {
     // 0 -> OFF
     // 1 a 3 -> ON
     // Há uma probabilidade de 
-    public static int randomMode() {
+    public int randomMode() {
         Random r = new Random();
         int low = 0;
         int high = 3;

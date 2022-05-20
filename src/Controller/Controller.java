@@ -1,12 +1,26 @@
 package Controller;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-import Entities.*;
+import Object.Object;
+import Entities.Casa;
+import Entities.Formula1;
+import Entities.Formula2;
+import Entities.Formula3;
+import Entities.Formula4;
+import Entities.Formula5;
+import Entities.Formula6;
+import Entities.FormulaConsumo;
+import Entities.Fornecedor;
+import Entities.Model;
+import Entities.SmartBulb;
+import Entities.SmartCamera;
+import Entities.SmartSpeaker;
 import Entities.Exceptions.DateAlreadyExistsException;
 import Entities.Exceptions.HouseAlreadyExists;
 import Entities.Exceptions.HouseDoesntExists;
@@ -54,7 +68,7 @@ public class Controller extends Exception {
         Window.viewParsing();
         Parser p = new Parser();
         try {
-            end_program = p.parseLogs(model, file_logs);
+            end_program = end_program || p.parseLogs(model, file_logs);
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
@@ -64,6 +78,8 @@ public class Controller extends Exception {
 
         if (!end_program) {
             Window.parsingConcluded();
+
+            model.printSuppliers();
 
             // ---| Manual ou Automatização |---
             int opcao_inicial = -1;
@@ -77,22 +93,77 @@ public class Controller extends Exception {
                 }  
             }
     
+            while(true) {
+                switch (opcao_inicial) {
+                    case 1: // Automatizar a simulação
+                        end_program = end_program || controllerAutomatizacao(scanner, model, file_auto);
+                    case 2: // Menu para o utilizador
+                        while(!end_program) {
+                            end_program = end_program || controllerUtilizador(scanner, model);
+                        }
+                    case 3: // Guardar o estado do programa
+                        end_program = end_program || saveProgram(model);
+                    default: // Sair do programa
+                        end_program = true;
+                }
+                if (end_program == true) break;
+            }
+        }
+
+        scanner.close();
+        Window.finalText();
+    }
+
+    // salvar o estado autual do programa
+    private static boolean saveProgram(Model model) {
+        Window.guardarPrograma();
+        try {
+            Object.writeObject(model);
+            return false;
+        }
+        catch (IOException e) {
+			System.out.println("Error initializing stream");
+            return true;
+		}
+    }
+
+    // Corre um modelo e anavança diretamente para o Menu de alterações
+    public static void runObject(Model model, String auto) throws InvalidDateException, DateAlreadyExistsException {
+        Scanner scanner = new Scanner(System.in);
+        boolean end_program = false;
+
+        // ---| Manual ou Automatização |---
+        int opcao_inicial = -1;
+        while(opcao_inicial == -1) {
+            try{
+                opcao_inicial = Menu.menuInicial(scanner);
+            }
+            catch (InputMismatchException e) { // Não foi inscrito um int
+                System.out.println(e.getMessage());
+                opcao_inicial = -1;
+            }  
+        }
+
+        while(true) {
             switch (opcao_inicial) {
-    
                 case 1: // Automatizar a simulação
-                    end_program = end_program || controllerAutomatizacao(scanner, model, file_auto);
+                    try { 
+                        end_program = end_program || controllerAutomatizacao(scanner, model, auto);
+                    }
+                    catch (FileNotFoundException e) {
+                        System.out.println("File not " + auto + " found");
+                    }
                 case 2: // Menu para o utilizador
                     while(!end_program) {
                         end_program = end_program || controllerUtilizador(scanner, model);
                     }
+                case 3: // Guardar o estado do programa
+                    end_program = end_program || saveProgram(model);
                 default: // Sair do programa
                     end_program = true;
             }
+            if (end_program == true) break;
         }
-
-        // boolean opcao_final;
-        // opcao_final = Window
-
         scanner.close();
         Window.finalText();
     }
@@ -122,50 +193,45 @@ public class Controller extends Exception {
         boolean avancou_tempo = false; // indica se o utilizador já avançou no tempo pelo menos uma vez
                                        // caso tenha, é disponibilizado as poções de ver as afturas e de evr as estatísticas
         while(!end_program && opcao_utilizador == -1) {
-            opcao_utilizador = Menu.menuUtilizadorManual(scanner, avancou_tempo);
+            opcao_utilizador = Menu.menuUtilizadorManual(scanner);
 
-            if (!avancou_tempo) {
-                switch (opcao_utilizador) {
-                    case 1: // Inserir dados
-                        end_program = end_program || controllerInsert(scanner, model);
-                        break;
-                    case 2: // Alterar dados do modelo
-                        end_program = end_program || controllerAlterar(scanner, model);
-                        break;
-                    case 3: // Avançar no tempo
-                        avancou_tempo = true;
-                        controllerTempo(scanner, model);
-                        break;
-                    default: // Sair do programa
-                        end_program = true;
-                        break;
-                } 
-            }
-            else { // avancou_tempo 
-                switch (opcao_utilizador) {
+            switch (opcao_utilizador) {
 
-                    case 1: // Inserir dados no modelo
-                        end_program = end_program || controllerInsert(scanner, model);
-                        break;
-                    case 2: // Alterar dados do modelo
-                        end_program = end_program || controllerAlterar(scanner, model);
-                        break;
-                    case 3: // Avançar no tempo
-                        avancou_tempo = true;
-                        controllerTempo(scanner, model);
-                        break;
-                    case 4: // Apresentar TODAS as Faturas
+                case 1: // Inserir dados no modelo
+                    end_program = end_program || controllerInsert(scanner, model);
+                    break;
+                case 2: // Alterar dados do modelo
+                    end_program = end_program || controllerAlterar(scanner, model);
+                    break;
+                case 3: // Avançar no tempo
+                    avancou_tempo = true;
+                    controllerTempo(scanner, model);
+                    break;
+                case 4: // Apresentar TODAS as Faturas
+                    if (avancou_tempo == false) {
+                        System.out.println("");
+                        System.out.println("Não há faturas");
+                        System.out.println("");
+                    }
+                    else {
                         model.generateInvoices(model.getFromDate());
                         System.out.println("");
                         model.printInvoices();
-                        break;
-                    case 5: // Estatísticas
+                    }
+                    break;
+                case 5: // Estatísticas
+                    if (avancou_tempo == false) {
+                        System.out.println("");
+                        System.out.println("Não há faturas");
+                        System.out.println("");
+                    }
+                    else {
                         controllerEstatisticas(scanner, model);
-                        break;
-                    default: // Sair do programa
-                        end_program = true;
-                        break;
-                } 
+                    }
+                    break;
+                default: // Sair do programa
+                    end_program = true;
+                    break;
             }
         }
         return end_program;
@@ -203,8 +269,10 @@ public class Controller extends Exception {
     public static void controllerInsertFornecedor(Scanner scanner, Model model) {
         Fornecedor fornecedor = new Fornecedor();
         int formula;
+        boolean cont = false;
         double custo = Parser.randomCustoInstalacao();
         while(true) {
+            cont = false;
             try {
                 String name_fornecedor = Menu.menuFornecedorName(scanner, model);
                 // Vai fornecer fórmulas aleatóreas
@@ -227,7 +295,9 @@ public class Controller extends Exception {
                         fornecedor.setFormulaConsumo(f5);                
                     case 6:
                         Formula6 f6 = new Formula6();
-                        fornecedor.setFormulaConsumo(f6);                
+                        fornecedor.setFormulaConsumo(f6);
+                    default:
+                        cont = true;                
                 }
                 fornecedor.setInstallationCost(custo);
                 fornecedor.setSupplier(name_fornecedor);
@@ -240,7 +310,8 @@ public class Controller extends Exception {
             catch (Exception e) {
                 continue;
             }
-            break;
+            if (cont == true) continue;
+            else break;
         }
         
         try {
@@ -418,6 +489,9 @@ public class Controller extends Exception {
                 case 4: // Desligar TODOS os dispositivos de uma casa
                     controllerTurnAllDevice(scanner, model, 0);
                     break;
+                case 5: // Mudar fórmula de um fornecedor
+                    end_program = end_program || controllerChangeFormula(scanner, model);
+                    break;
                 default: // Desligar o programa
                     end_program = true;
                     break;
@@ -426,6 +500,47 @@ public class Controller extends Exception {
         return end_program;
     }
 
+    public static boolean controllerChangeFormula(Scanner scanner, Model model) {
+        
+        String fornecedor;
+        while(true) {
+            fornecedor = Menu.menuEscolherFornecedor(scanner, model);
+            if (model.hasFornecedor(fornecedor)) break;
+        }
+        boolean end_program = false;
+        int formula;
+        FormulaConsumo fc = null;
+        while(true) {
+            formula = Menu.menuFormula(scanner);
+            switch (formula) {
+                case 1:
+                    Formula1 f1 = new Formula1();
+                    fc = f1;
+                case 2:
+                    Formula2 f2 = new Formula2();
+                    fc = f2;            
+                case 3:
+                    Formula3 f3 = new Formula3(); 
+                    fc = f3;         
+                case 4:
+                    Formula4 f4 = new Formula4();   
+                    fc = f4;            
+                case 5:
+                    Formula5 f5 = new Formula5();
+                    fc = f5;              
+                case 6:
+                    Formula6 f6 = new Formula6();
+                    fc = f6;
+                default:
+                    end_program = true;
+            }
+            if (end_program == true) break;
+        }
+
+        if (fc != null) model.changeFormula(fornecedor, fc);
+        
+        return end_program;
+    }
 
     public static void controllerTempo(Scanner scanner, Model model) {
         Window.clear();

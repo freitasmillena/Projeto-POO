@@ -98,6 +98,10 @@ public class Model implements Serializable {
         return this.casas.containsKey(nif_casa);
     }
 
+    public boolean hasFornecedor(String fornecedor) {
+        return this.fornecedores.containsKey(fornecedor);
+    }
+
     //Avançar com a data gera faturas
     public void generateInvoices(LocalDate toDate){
 
@@ -208,6 +212,11 @@ public class Model implements Serializable {
                 fornecedor.setFormulaConsumo(whichFormula(command.getCommand2()));
                 break;
         }
+    }
+
+    public void changeFormula(String supplier, FormulaConsumo fc) {
+        Fornecedor fornecedor = this.fornecedores.get(supplier);
+        fornecedor.setFormulaConsumo(fc);
     }
 
     //percorrer commands e executá-los
@@ -429,15 +438,6 @@ public class Model implements Serializable {
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
-    }
-
-    // funcão pra ler o ficheiro
-    public static Model loadObject(String fileName) throws FileNotFoundException, IOException, ClassNotFoundException{
-        FileInputStream fis = new FileInputStream(fileName);
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        Model m = (Model) ois.readObject();
-        ois.close();
-        return m;
     }
 
 
