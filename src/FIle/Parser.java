@@ -28,7 +28,7 @@ import Entities.Exceptions.*;
 public class Parser {
 
 
-    public boolean parseLogs(Model model, String fileName) throws FileNotFoundException, SupplierAlreadyExists, HouseAlreadyExists, LocationAlreadyExists, DateAlreadyExistsException, LocationDoesntExist {
+    public boolean parseLogs(Model model, String fileName) throws FileNotFoundException, SupplierAlreadyExists, HouseAlreadyExists, LocationAlreadyExists, DateAlreadyExistsException, LocationDoesntExist, SupplierDoesntExists {
         List<String> linhas = lerFicheiro(fileName);
         boolean end_program = false; // Caso apareceça um registo inválido, paramos o programa
         String[] linhaPartida;
@@ -108,7 +108,7 @@ public class Parser {
                         break;
                     }
                     SmartBulb sb = parseSmartBulb(linhaPartida[1], data, id_device);
-                    casaMaisRecente.addDeviceToLocation(divisao_string, sb, sb.getConsumptionBase());
+                    casaMaisRecente.addDeviceToLocation(divisao_string, sb, model.getInstallationCost(casaMaisRecente.getSupplier()));
                     id_device++;
 
                 case "SmartSpeaker":
@@ -118,7 +118,7 @@ public class Parser {
                         break;
                     }
                     SmartSpeaker ss = parseSmartSpeaker(linhaPartida[1], data, id_device);
-                    casaMaisRecente.addDeviceToLocation(divisao_string, ss, ss.getConsumptionBase());
+                    casaMaisRecente.addDeviceToLocation(divisao_string, ss, model.getInstallationCost(casaMaisRecente.getSupplier()));
                     id_device++;
                     
                 case "SmartCamera":
@@ -128,7 +128,7 @@ public class Parser {
                         break;
                     }
                     SmartCamera sc = parseSmartCamera(linhaPartida[1], data, id_device);
-                    casaMaisRecente.addDeviceToLocation(divisao_string, sc, sc.getConsumptionBase());
+                    casaMaisRecente.addDeviceToLocation(divisao_string, sc, model.getInstallationCost(casaMaisRecente.getSupplier()));
                     id_device++;
 
                 default:
