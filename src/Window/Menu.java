@@ -13,7 +13,6 @@ public class Menu {
 
     // Menu que saberá se o utilizador quer automatizar a simulção ou inserir manualmente as alterações ao estado do programa
     public static int menuInicial(Scanner scanner) {
-        Window.clear();
         System.out.println("");
         System.out.println("-----------| MENU INICIAL |-----------");
         System.out.println("");
@@ -42,19 +41,25 @@ public class Menu {
     }
  
 
-    public static int menuUtilizadorManual(Scanner scanner) {
-        Window.clear();
+    public static int menuUtilizadorManual(Scanner scanner, boolean avancou_tempo) {
         System.out.println("");
-        System.out.println("-----------| MENU - Escrever Manualmente |-----------");
+        System.out.println("--------| MENU - Escrever Manualmente (Com ou Sem automatização) |--------");
         System.out.println("");
         System.out.println("-> 1) Inserir dados");
         System.out.println("-> 2) Alterar dados");
         System.out.println("-> 3) Avançar no tempo");
         System.out.println("-> 4) Guardar o estado do programa");
-        System.out.println("-> 5) Apresentar TODAS as Faturas");
-        System.out.println("-> 6) Estatísticas");
+        if (!avancou_tempo) {
+            System.out.println("-> 5) Apresentar TODAS as Faturas (INDISPONíVEL - Avançe no tempo)");
+            System.out.println("-> 6) Estatísticas (INDISPONíVEL - Avançe no tempo)");
+        }
+        else {
+            System.out.println("-> 5) Apresentar TODAS as Faturas");
+            System.out.println("-> 6) Estatísticas");
+        }
         System.out.println("-> (Qualquer outra tecla) SAIR");
         System.out.println("");
+
         int opcao_utilizador;
 
         while (true) {
@@ -73,7 +78,6 @@ public class Menu {
             }
         }
     }
-
 
     public static LocalDate menuTempo(Scanner scanner, LocalDate data_atual) {
         System.out.println("");
@@ -104,8 +108,7 @@ public class Menu {
         }
     }
 
-    public int menuInserir(Scanner scanner) {
-        Window.clear();
+    public static int menuInserir(Scanner scanner) {
         System.out.println("");
         System.out.println("-------| MENU - Inserir |-------");
         System.out.println("");
@@ -113,7 +116,7 @@ public class Menu {
         System.out.println("-> 2) Casa");
         System.out.println("-> 3) Divisão numa casa");
         System.out.println("-> 4) Dispositivo numa divisão de uma casa");
-        System.out.println("-> (Qualquer outra tecla) SAIR");
+        System.out.println("-> (Qualquer outra tecla) VOLTAR");
         System.out.println("");
         int opcao_utilizador;
 
@@ -160,7 +163,8 @@ public class Menu {
         int NIF;
 
         while (true) {
-            System.out.print("Escreva o NIF da Casa (Caso queira ver a lista dos NIF's de todas casa, escreva 0): ");
+            System.out.println("(Escreva 0 para ver os NIF's das casa)");
+            System.out.print("Escreva o NIF da casa: ");
             try {
                 NIF = Integer.parseInt(scanner.nextLine());
                 System.out.println("");
@@ -175,12 +179,13 @@ public class Menu {
             if ((opc == 1) && model.hasCasa(Integer.toString(NIF))) { // criar casa
                 throw new HouseAlreadyExists("!!! House already exists !!!");
             }
-            else if ((opc == 0) && !model.hasCasa(Integer.toString(NIF))) {
+            else if ((opc == 0) && (NIF != 0 && !model.hasCasa(Integer.toString(NIF)))) {
                 throw new HouseDoesntExists("!!! House doesn't exist !!!");
             }
 
 
             if (NIF == 0) { 
+                Window.casa();
                 System.out.println(Arrays.toString(model.printNIFs().toArray()));
                 continue;
             }
@@ -229,14 +234,13 @@ public class Menu {
     }
 
     public static int menuChooseDevice(Scanner scanner) {
-        Window.clear();
         System.out.println("");
         System.out.println("-------| MENU - Inserir 'SmartDevice' |-------");
         System.out.println("");
         System.out.println("-> 1) SmartBulb");
         System.out.println("-> 2) SmartSpeaker");
         System.out.println("-> 3) SmarCamera");
-        System.out.println("-> (Qualquer outra tecla) SAIR");
+        System.out.println("-> (Qualquer outra tecla) VOLTAR");
         int opcao_utilizador;
 
         while (true) {
@@ -259,7 +263,6 @@ public class Menu {
 
 
     public static int menuAlterar(Scanner scanner) {
-        Window.clear();
         System.out.println("");
         System.out.println("-------| MENU - Alterar |-------");
         System.out.println("");
@@ -268,7 +271,7 @@ public class Menu {
         System.out.println("-> 3) Ligar TODOS os dispositivos de uma casa");
         System.out.println("-> 4) Desligar TODOS os dispositivos de uma casa");
         System.out.println("-> 5) Alterar Fórmula de um fornecedor");
-        System.out.println("-> (Qualquer outra tecla) SAIR");
+        System.out.println("-> (Qualquer outra tecla) VOLTAR");
         System.out.println("");
         int opcao_utilizador;
 
@@ -289,8 +292,8 @@ public class Menu {
         }
     }
 
+
     public String menuFornecedorNIF(Scanner scanner, Model model) {
-        Window.clear();
         System.out.println("");
         System.out.println("-------| MENU - Alterar - Fornecedor |-------");
         System.out.println("");
@@ -380,7 +383,6 @@ public class Menu {
 
 
     public static int menuEstatisticas(Scanner scanner) {
-        Window.clear();
         System.out.println("");
         System.out.println("-------| Obter dados para as Estatísticas |-------");
         System.out.println("");
@@ -388,7 +390,7 @@ public class Menu {
         System.out.println("-> 2) (Nome do) Comercializador com maior volume de faturação");
         System.out.println("-> 3) Listar TODAS as faturas emitidas por um comercializador");
         System.out.println("-> 4) Listar os maiores consumidores de energia durante um período");
-        System.out.println("-> (Qualquer outra tecla) SAIR");
+        System.out.println("-> (Qualquer outra tecla) VOLTAR");
         System.out.println("");
         int opcao_utilizador;
 
@@ -423,6 +425,13 @@ public class Menu {
                 if(!name_supplier.equals("0") && model.verifyFornecedor(name_supplier)){
                     throw new SupplierDoesntExists("O fornecedor com nome: " + name_supplier + " não existe.");
                 }
+                else if (name_supplier.equals("0")) {
+                    Window.inicialWriteSupplier();
+                    System.out.println("");
+                    System.out.println(Arrays.toString(model.printSuppliers().toArray()));
+                    System.out.println("");
+                    continue;
+                }
                 return name_supplier;
             } 
             catch (java.util.InputMismatchException e) {
@@ -442,7 +451,7 @@ public class Menu {
         System.out.println("");
         System.out.println("Para calcular o ponto 4. das estatísticas, precisamos do período das datas que deseja.");
         System.out.println("");
-        System.out.print("Estrutura de uma data -> yyyy-MM-dd (yyyy - ano; MM - mês; dd - dia)");
+        System.out.println("Estrutura de uma data -> yyyy-MM-dd (yyyy - ano; MM - mês; dd - dia)");
 
         LocalDate data_inicial;
 
@@ -464,14 +473,12 @@ public class Menu {
         }
     }
 
-    public LocalDate menuEstatistica4ToDate(Scanner scanner) {
+    public static LocalDate menuEstatistica4ToDate(Scanner scanner) {
         LocalDate data_final;
 
         while(true) {
-            System.out.println("");
-            System.out.print("Escreva a data inicial: ");
+            System.out.print("Escreva a data final: ");
             try {
-
                 data_final = LocalDate.parse(scanner.nextLine());
                 System.out.println("");
                 return data_final;
@@ -489,13 +496,12 @@ public class Menu {
 
 
     public static int menuOpcoesAutomatizacao(Scanner scanner) {
-        Window.clear();
         System.out.println("");
         System.out.println("-------| MENU - Automatização |-------");
         System.out.println("");
         System.out.println("-> 1) Estatísticas");
         System.out.println("-> 2) Guardar o estado do programa");
-        System.out.println("-> (Qualquer outra tecla) SAIR");
+        System.out.println("-> (Qualquer outra tecla) VOLTAR");
         System.out.println("");
         int opcao_utilizador;
 
@@ -551,7 +557,7 @@ public class Menu {
         System.out.println("-> 4) Formula4");
         System.out.println("-> 5) Formula5");
         System.out.println("-> 6) Formula6");
-        System.out.println("-> (Qualquer outra tecla) SAIR");
+        System.out.println("-> (Qualquer outra tecla) VOLTAR");
         System.out.println("");
         int opcao_utilizador;
 

@@ -88,7 +88,7 @@ public class Window {
         String nif_casa;
         try {
             nif_casa = model.higherTotalCost();
-            System.out.println("Resultado (NIF da Casa): " + nif_casa);
+            System.out.println(nif_casa);
             System.out.println("");
         }
         catch (NoInvoicesAvailable e) {
@@ -103,7 +103,7 @@ public class Window {
         String nome_comercializador;
         try {
             nome_comercializador = model.hasMoreInvoices();
-            System.out.println("Nome de fornecedor: " + nome_comercializador);
+            System.out.println(nome_comercializador);
             System.out.println("");
         }
         catch (NoInvoicesAvailable e) {
@@ -119,13 +119,14 @@ public class Window {
     }
 
     public static void finalText() {
+        Window.clear();
         System.out.println("");
 
-        System.out.println("   *-***************************-*");
-        System.out.println("   *-*                         *-*");
-        System.out.println("   *-*   -| End of program |-  *-*");
-        System.out.println("   *-*                         *-*");
-        System.out.println("   *-***************************-*");
+        System.out.println("   *-***************************-*    *-*   -----   ------   ------   *-*");
+        System.out.println("   *-*                         *-*    *-*   |   |   |    |   |    |   *-*");
+        System.out.println("   *-*   -| End of program |-  *-*    *-*   |----   |    |   |    |   *-*");
+        System.out.println("   *-*                         *-*    *-*   |       |    |   |    |   *-*");
+        System.out.println("   *-***************************-*    *-*   |       ------   ------   *-*");
 
         System.out.println("");
         System.out.println("");
@@ -148,6 +149,21 @@ public class Window {
         System.out.println("***********************************");
         System.out.println("");
         System.out.println("   Por favor, espere!");
+        System.out.println("");
+
+    }
+
+    public static void finalCarregarPrograma() {
+        System.out.println("");
+        System.out.println("**********************************************");
+        System.out.println("* Finalizada a criação do estado do programa *");
+        System.out.println("**********************************************");
+        System.out.println("");
+    }
+
+    public static void casa() {
+        System.out.println("");
+        System.out.println("---| Lista dos NIFs das casas |---");
         System.out.println("");
     }
 }

@@ -198,7 +198,6 @@ public class Model implements Serializable {
             command.setDate(this.fromDate);
         }
 
-
         switch(command.getName()){
             case "setMode": // setMode casa dispositivo mode
                 setModeAdvanced(command.getCommand1(), command.getCommand2(), whichMode(command.getCommand3()), command.getDate());
@@ -289,12 +288,12 @@ public class Model implements Serializable {
 
         StringBuilder sb = new StringBuilder();
         sb.append("Owner: ").append(result.getOwner())
-                .append(" ")
+                .append(" \n")
                 .append("NIF: ").append(result.getNIF())
-                .append(" ")
+                .append(" \n")
                 .append("Fornecedor: ").append(result.getSupplier())
-                .append(" ")
-                .append("Custo total: ").append(String.format("%,.2f",cost)).append("\n");
+                .append(" \n")
+                .append("Custo total: ").append(String.format("%,.2f",cost)).append(" \n");
 
 
 
@@ -390,6 +389,14 @@ public class Model implements Serializable {
         this.fornecedores.put(fornecedor.getSupplier(), fornecedor.clone());
     }
 
+    /* Fornecedor*/
+    public void changeSupplierHouse(String fornecedor, String nif_casa) throws SupplierAlreadyExists {
+        if(!this.fornecedores.containsKey(fornecedor)){
+            throw new SupplierAlreadyExists("Este fornecedor: " + fornecedor + " já existe.");
+        }
+        this.casas.get(nif_casa).setSupplier(fornecedor);
+    }
+
     // Verifica se o modelo tem o fornecedor recebido
     public boolean verifyFornecedor(String name_supplier) {
         return !this.fornecedores.containsKey(name_supplier);
@@ -420,17 +427,6 @@ public class Model implements Serializable {
     }
 
     // Inverter o Modo (ON / OFF) de um dispositivo
-
-
-    //Salvar em ficheiro objeto
-    public void saveObject(String fileName) throws FileNotFoundException, IOException {
-        FileOutputStream fos = new FileOutputStream(fileName);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(this);
-        oos.flush();
-        oos.close();
-    }
-
     public void turnOpossite(LocalDate fromDate, String nif_casa, String id_device) {
         try {
             this.casas.get(nif_casa).turnOpossiteDeviceLocation(fromDate, id_device);
