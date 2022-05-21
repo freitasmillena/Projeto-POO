@@ -42,7 +42,14 @@ public class Window {
         System.out.println("");
     }
 
-    public void inicialWriteNIF() {
+    public static void indisponivel() {
+        Window.clear();
+        System.out.println("");
+        System.out.println("  !!! INDISPONÍVEL! Escolha outra opção. !!!");
+        System.out.println("");
+    }
+
+    public static void inicialWriteNIF() {
         System.out.println("");
         System.out.println("------------| Lista de NIFs dos donos das Casas |------------");
         System.out.println("");

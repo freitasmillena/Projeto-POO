@@ -157,33 +157,7 @@ public class Model implements Serializable {
         return m;
     }
 
-    //String to Formula
-    public FormulaConsumo whichFormula(String formula){
-        FormulaConsumo formulaConsumo = null;
-        switch (formula) {
-            case "Formula1":
-                formulaConsumo = new Formula1();
-                break;
-            case "Formula2": 
-                formulaConsumo = new Formula2();
-                break;
-            case "Formula3": 
-                formulaConsumo = new Formula3();
-                break;
-            case "Formula4": 
-                formulaConsumo = new Formula4();
-                break;
-            case "Formula5": 
-                formulaConsumo = new Formula5();
-                break;
-            case "Formula6": 
-                formulaConsumo = new Formula6();
-                break;
-        }
-        return formulaConsumo;
-    }
-
-    public void setModeAdvanced(String nif, String sd, int mode, LocalDate date) throws InvalidDateException, DateAlreadyExistsException{
+    public void setModeAdvanced(String nif, String sd, int mode, LocalDate date) throws InvalidDateException, DateAlreadyExistsException, DeviceDoesntExists{
         if(this.fromDate.compareTo(date) > 0){
             throw new InvalidDateException("Data inválida " +  date + ". Deve ser a partir de " + this.fromDate);
         }
@@ -191,7 +165,7 @@ public class Model implements Serializable {
     }
 
     //Executar 1 comando
-    public void runCommand(Command command) throws DateAlreadyExistsException, InvalidDateException {
+    public void runCommand(Command command) throws DateAlreadyExistsException, InvalidDateException, LocationDoesntExist, DeviceDoesntExists {
         //Se for esta data, são comandos da funcionalidade básica. Portanto tem que atualizar para data de início da próxima fatura
         //Se for funcionalidade avançada, n entra nesta condição e usa as datas passadas no ficheiro
         if(command.getDate().equals(LocalDate.parse("1998-01-27"))){
@@ -199,6 +173,9 @@ public class Model implements Serializable {
         }
 
         switch(command.getName()){
+            case "setModeLocation": //setModeLocation casa location mode
+                this.casas.get(command.getCommand1()).setAllModeLocation(command.getCommand2(), whichMode(command.getCommand3()), command.getDate());
+                break;
             case "setMode": // setMode casa dispositivo mode
                 setModeAdvanced(command.getCommand1(), command.getCommand2(), whichMode(command.getCommand3()), command.getDate());
                 break;
@@ -207,32 +184,39 @@ public class Model implements Serializable {
                 c.setSupplier(command.getCommand2());
                 break;
             case "changeFormula": //changeFormula supplier formula
-                Fornecedor fornecedor = this.fornecedores.get(command.getCommand1());
-                fornecedor.setFormulaConsumo(whichFormula(command.getCommand2()));
+                changeFormula(command.getCommand1(), command.getCommand2());
                 break;
         }
     }
 
-    public void changeFormula(String supplier, FormulaConsumo fc) {
+    public void changeFormula(String supplier, String fc) {
         Fornecedor fornecedor = this.fornecedores.get(supplier);
-        fornecedor.setFormulaConsumo(fc);
+        fornecedor.setFormulaConsumo(this.formulas.get(fc).clone());
     }
 
     //percorrer commands e executá-los
-    public void runCommands() throws DateAlreadyExistsException, InvalidDateException{
-        for(Command command : this.commands){
-            runCommand(command);
+    public void runCommands() throws DateAlreadyExistsException, InvalidDateException, LocationDoesntExist, DeviceDoesntExists{
+        if (this.commands.size() > 0) {
+            for(Command command : this.commands){
+                runCommand(command);
+            }
         }
     }
 
 
     //avançar data
-    public void moveForward(LocalDate toDate) throws DateAlreadyExistsException, InvalidDateException{
+    public void moveForward(LocalDate toDate) throws InvalidDateException, DateAlreadyExistsException, LocationDoesntExist, DeviceDoesntExists{
         if(this.fromDate.compareTo(toDate) >= 0){
             //se data de inicio for igual ou maior que data de fim
             throw new InvalidDateException("Data inválida " +  toDate + ". Deve ser a partir de " + this.fromDate);
         }
         generateInvoices(toDate);
+        /* // DEBUG
+        for (String s : this.invoices.keySet()){
+            System.out.println(s);
+        }
+        System.out.println(this.commands.size());
+        */
         runCommands();
     }
 
@@ -264,6 +248,14 @@ public class Model implements Serializable {
             }
         }
         return strings;
+    }
+
+    public List<String> printLocations(String nif_casa) {
+        return this.casas.get(nif_casa).printLocations();
+    }
+
+    public List<String> printDevices(String nif_casa) {
+        return this.casas.get(nif_casa).printAllDevicesIDs();
     }
 
 
@@ -402,37 +394,5 @@ public class Model implements Serializable {
         return !this.fornecedores.containsKey(name_supplier);
     }
 
-    // Ligar todos os dispotivos de todas as casas (ON)
-    public void setAllDeviceON (String nif_casa) {
-        for (Casa casa : this.casas.values()) {
-            try {
-                casa.setAllMode(1, this.fromDate.plusDays(1));
-            }
-            catch (DateAlreadyExistsException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
 
-    // Desligar todos os dispotivos de todas as casas (OFF)
-    public void setAllDeviceOFF (String nif_casa) {
-        for (Casa casa : this.casas.values()) {
-            try {
-                casa.setAllMode(0, this.fromDate.plusDays(1));
-            }
-            catch (DateAlreadyExistsException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-
-    // Inverter o Modo (ON / OFF) de um dispositivo
-    public void turnOpossite(LocalDate fromDate, String nif_casa, String id_device) {
-        try {
-            this.casas.get(nif_casa).turnOpossiteDeviceLocation(fromDate.plusDays(1), id_device);
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
 }

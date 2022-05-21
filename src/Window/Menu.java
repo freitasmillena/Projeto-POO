@@ -12,13 +12,28 @@ import Entities.Exceptions.SupplierDoesntExists;
 public class Menu {
 
     // Menu que saberá se o utilizador quer automatizar a simulção ou inserir manualmente as alterações ao estado do programa
-    public static int menuInicial(Scanner scanner) {
+    public static int menuInicial(Scanner scanner, boolean carregou_ficheiro, boolean automatizado) {
         System.out.println("");
         System.out.println("-----------| MENU INICIAL |-----------");
         System.out.println("");
-        System.out.println("-> 1) Automatizar a simulação");
-        System.out.println("-> 2) Escrever dados manualmente");
-        System.out.println("-> 3) Guardar o estado do programa");
+        if (carregou_ficheiro) System.out.println("-> 1) Automatizar a simulação");
+        else if (automatizado) System.out.println("-> 1) Automatizar a simulação (JÁ FEITO)");
+        else {
+            System.out.println("-> 1) Automatizar a simulação (INDISPONÍVEL)");
+        }
+        if (carregou_ficheiro) System.out.println("-> 2) Escrever dados manualmente");            
+        else {
+            System.out.println("-> 2) Escrever dados manualmente (INDISPONÍVEL)");
+        }
+        if (carregou_ficheiro) System.out.println("-> 3) Guardar o estado do programa");          
+        else {
+            System.out.println("-> 3) Guardar o estado do programa (INDISPONÍVEL)");
+        }
+        System.out.println("-> 4) Carregar estado do programa");
+        if (!carregou_ficheiro) {
+            System.out.println("-> 5) Carregar ficheiro de texto de dados (Parsing)");
+        }
+        else System.out.println("-> 5) Carregar ficheiro de texto de dados (Parsing) (INDISPONÍVEL)");
         System.out.println("-> (Qualquer outra tecla) SAIR");
         System.out.println("");
         int opcao_utilizador;
@@ -57,7 +72,7 @@ public class Menu {
             System.out.println("-> 5) Apresentar TODAS as Faturas");
             System.out.println("-> 6) Estatísticas");
         }
-        System.out.println("-> (Qualquer outra tecla) SAIR");
+        System.out.println("-> (Qualquer outra tecla) VOLTAR");
         System.out.println("");
 
         int opcao_utilizador;
@@ -80,6 +95,7 @@ public class Menu {
     }
 
     public static LocalDate menuTempo(Scanner scanner, LocalDate data_atual) {
+        Window.clear();
         System.out.println("");
         System.out.println("----------------| MENU - Avançar no Tempo |----------------");
         System.out.println("");
@@ -109,6 +125,7 @@ public class Menu {
     }
 
     public static int menuInserir(Scanner scanner) {
+        Window.clear();
         System.out.println("");
         System.out.println("-------| MENU - Inserir |-------");
         System.out.println("");
@@ -185,7 +202,7 @@ public class Menu {
 
 
             if (NIF == 0) { 
-                Window.casa();
+                Window.inicialWriteNIF();
                 System.out.println(Arrays.toString(model.printNIFs().toArray()));
                 continue;
             }
@@ -197,43 +214,27 @@ public class Menu {
     public static String menuLocation(Scanner scanner) {
         System.out.println("");
         String divisao = null;
-        System.out.print("Escreva a divisão que quer inserir na casa: ");
-        try {
-            divisao = scanner.nextLine();
-            System.out.println("");
-            return divisao;
-        }
-        catch (java.util.InputMismatchException e) {
-            System.out.println("");
-            System.out.println("");
-            System.out.println(Cores.VERMELHO + "!!! Tipo Inválido !!! Por favor, insira um valor válido." + Cores.RESET);
-            System.out.println("");
-        }
-        return divisao;
-    }
-
-    public static String menuDevice(Scanner scanner) {
-        int opcao_utilizador;
-        while (true) {
-            System.out.println("");
-            System.out.print("Selecione a opção pretendida: ");
+        System.out.println("(Escreva 0 para ver todas as divisões existentes da casa)");
+        while(true) {
+            System.out.print("Escreva a divisão que quer inserir na casa: ");
             try {
-                opcao_utilizador = Integer.parseInt(scanner.nextLine());
+                divisao = scanner.nextLine();
                 System.out.println("");
-                break;
+                return divisao;
             }
             catch (java.util.InputMismatchException e) {
                 System.out.println("");
                 System.out.println("");
                 System.out.println(Cores.VERMELHO + "!!! Tipo Inválido !!! Por favor, insira um valor válido." + Cores.RESET);
                 System.out.println("");
-                continue;
             }
+            return divisao;            
         }
-        return Integer.toString(opcao_utilizador);
+
     }
 
     public static int menuChooseDevice(Scanner scanner) {
+        Window.clear();
         System.out.println("");
         System.out.println("-------| MENU - Inserir 'SmartDevice' |-------");
         System.out.println("");
@@ -268,8 +269,8 @@ public class Menu {
         System.out.println("");
         System.out.println("-> 1) Alterar Fornecedor de uma Casa");
         System.out.println("-> 2) Ligar/Desligar dispositivo (individualmente) de uma casa");
-        System.out.println("-> 3) Ligar TODOS os dispositivos de uma casa");
-        System.out.println("-> 4) Desligar TODOS os dispositivos de uma casa");
+        System.out.println("-> 3) Ligar TODOS os dispositivos de uma divisão da casa");
+        System.out.println("-> 4) Desligar TODOS os dispositivos de uma divisão da casa");
         System.out.println("-> 5) Alterar Fórmula de um fornecedor");
         System.out.println("-> (Qualquer outra tecla) VOLTAR");
         System.out.println("");
@@ -294,6 +295,7 @@ public class Menu {
 
 
     public String menuFornecedorNIF(Scanner scanner, Model model) {
+        Window.clear();
         System.out.println("");
         System.out.println("-------| MENU - Alterar - Fornecedor |-------");
         System.out.println("");
@@ -413,8 +415,9 @@ public class Menu {
 
     public static String menuEstatistica3(Scanner scanner, Model model) throws SupplierDoesntExists {
 
+        System.out.println("");
+        System.out.println("----| 3. Listar TODAS as faturas emitidas por um comercializador |----");
         String name_supplier;
-
         while(true) {
             System.out.println("");
             System.out.println("(Para consultar os nomes de todos os comercializadores, escreva 0)");
@@ -445,6 +448,7 @@ public class Menu {
     }
 
     public static LocalDate menuEstatistica4FromDate(Scanner scanner) {
+        Window.clear();
         Window.resultsEstatisticas();
         System.out.println("");
         System.out.println("----| 4. Listar os maiores consumidores de energia durante um período |----");
@@ -496,6 +500,7 @@ public class Menu {
 
 
     public static int menuOpcoesAutomatizacao(Scanner scanner) {
+        Window.clear();
         System.out.println("");
         System.out.println("-------| MENU - Automatização |-------");
         System.out.println("");
@@ -525,7 +530,7 @@ public class Menu {
 
 
 
-    public int menuDispositivo(Scanner scanner) {
+    public static int menuDispositivo(Scanner scanner) {
         int opcao_utilizador;
         System.out.println("");
         System.out.println("(Escreva 0 para ver a lista de todos os dispostivos da casa atual)");
@@ -557,7 +562,6 @@ public class Menu {
         System.out.println("-> 4) Formula4");
         System.out.println("-> 5) Formula5");
         System.out.println("-> 6) Formula6");
-        System.out.println("-> (Qualquer outra tecla) VOLTAR");
         System.out.println("");
         int opcao_utilizador;
 
@@ -576,6 +580,74 @@ public class Menu {
                 System.out.println("");
                 continue;
             }
+        }
+    }
+
+    public static int menuMode(Scanner scanner) {
+        int opcao_utilizador;
+        System.out.println("");
+        System.out.println("---| Escolher Modo do dispositivo |---");
+        System.out.println("-> 1) ON");
+        System.out.println("-> 2) OFF");
+        while (true) {
+            System.out.print("Selecione a opção pretendida: ");
+            try {
+                opcao_utilizador = Integer.parseInt(scanner.nextLine());
+                System.out.println("");
+            }
+            catch (java.util.InputMismatchException e) {
+                System.out.println("");
+                System.out.println("");
+                System.out.println(Cores.VERMELHO + "!!! Tipo Inválido !!! Por favor, insira um valor válido." + Cores.RESET);
+                System.out.println("");
+                continue;
+            }
+            
+            return opcao_utilizador;
+        }
+    }
+
+    public static String menuParser(Scanner scanner) {
+        Window.clear();
+        String logs;
+        System.out.println("");
+        System.out.println("(Para teste: db/logs.txt)");
+        while (true) {
+            System.out.print("Escreva o 'path' do ficheiro que contém os dados para parsing: ");
+            try {
+                logs = scanner.nextLine();
+                System.out.println("");
+            }
+            catch (java.util.InputMismatchException e) {
+                System.out.println("");
+                System.out.println("");
+                System.out.println(Cores.VERMELHO + "!!! Tipo Inválido !!! Por favor, insira um valor válido." + Cores.RESET);
+                System.out.println("");
+                continue;
+            }
+            return logs;
+        }
+    }
+
+    public static String menuAuto(Scanner scanner) {
+        Window.clear();
+        String logs;
+        System.out.println("");
+        System.out.println("(Para teste: db/auto.txt)");
+        while (true) {
+            System.out.print("Escreva o 'path' do ficheiro com os comandos de automatização: ");
+            try {
+                logs = scanner.nextLine();
+                System.out.println("");
+            }
+            catch (java.util.InputMismatchException e) {
+                System.out.println("");
+                System.out.println("");
+                System.out.println(Cores.VERMELHO + "!!! Tipo Inválido !!! Por favor, insira um valor válido." + Cores.RESET);
+                System.out.println("");
+                continue;
+            }
+            return logs;
         }
     }
 }

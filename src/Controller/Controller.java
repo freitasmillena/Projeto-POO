@@ -3,12 +3,12 @@ package Controller;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
 import Object.Object;
 import Entities.Casa;
+import Entities.Command;
 import Entities.Formula1;
 import Entities.Formula2;
 import Entities.Formula3;
@@ -23,10 +23,12 @@ import Entities.SmartBulb;
 import Entities.SmartCamera;
 import Entities.SmartSpeaker;
 import Entities.Exceptions.DateAlreadyExistsException;
+import Entities.Exceptions.DeviceDoesntExists;
 import Entities.Exceptions.HouseAlreadyExists;
 import Entities.Exceptions.HouseDoesntExists;
 import Entities.Exceptions.InvalidDateException;
 import Entities.Exceptions.LocationAlreadyExists;
+import Entities.Exceptions.LocationDoesntExist;
 import Entities.Exceptions.SupplierAlreadyExists;
 import Entities.Exceptions.SupplierDoesntExists;
 import FIle.Parser;
@@ -36,7 +38,7 @@ import Window.Window;
 public class Controller extends Exception {
     
     // Responsável por inicializar o programa
-    public static void run(String file_logs, String file_auto) throws FileNotFoundException, InvalidDateException, DateAlreadyExistsException {
+    public static void run() {
         boolean end_program = false; 
 
         Scanner scanner = new Scanner(System.in);
@@ -62,57 +64,95 @@ public class Controller extends Exception {
         model.setFromDate(today); // definir a data de execução do programa como a data inicial do Model
 
         Window.createPOO();
-        
+    
 
+        // ---| Manual ou Automatização |---
+        int opcao_inicial = -1;
+
+        boolean carregou_ficheiro = false;
+        boolean automatizado = false; // só pode ser feito uma vez
+
+        while(end_program == false) {
+            opcao_inicial = Menu.menuInicial(scanner, carregou_ficheiro, automatizado);
+
+            switch (opcao_inicial) {
+                case 1: // Automatizar a simulação
+                    if (!carregou_ficheiro || (carregou_ficheiro && automatizado)) {
+                        Window.indisponivel();
+                    }
+                    else if(carregou_ficheiro && !automatizado) {
+                        try {
+                            automatizado = controllerAutomatizacao(scanner, model);
+                        }
+                        catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                    break;
+                case 2: // Menu para o utilizador
+                    if (!carregou_ficheiro) {
+                        Window.indisponivel();
+                    }
+                    else {
+                        try {
+                            controllerUtilizador(scanner, model, automatizado); // não avançou no tempo
+                        }
+                        catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                    break;
+                case 3: // Guardar o estado do programa
+                    saveProgram(model);
+                    break;
+                case 4: // Carregar estado do programa
+                    try {
+                        model = Object.loadObject("modelObject.txt");
+                        System.out.println("");
+                        System.out.println(" Object carregado!");
+                        System.out.println("");
+                        carregou_ficheiro = true;
+                    }
+                    catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case 5: // Carregar ficheiro de texto de dados (Parsing)
+                    if (parseFile(model, scanner) == true) carregou_ficheiro = true;
+                    break;
+                default: // Sair do programa
+                    end_program = true;
+            }
+        }
+        scanner.close();
+        Window.finalText();
+    }
+
+    // Parse fo ficheiro
+    private static boolean parseFile(Model model, Scanner scanner) {
+        boolean leu_ficheiro = false;
         // ---| PARSING |---
+
+        String file_logs = Menu.menuParser(scanner);
 
         Window.viewParsing();
         Parser p = new Parser();
         try {
             p.parseLogs(model, file_logs);
+            Window.parsingConcluded();
+            leu_ficheiro = true;
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("");
+            System.out.println("!!!! Ficheiro " + file_logs + "não foi encontrado !!!!!");
+            System.out.println("");
         }
         catch (Exception e) {
+            System.out.println("");
             System.out.println(e.getMessage());
-            Window.finalText();
-            System.exit(0);
+            System.out.println("");
         }
-
-        if (end_program == false) {
-            Window.parsingConcluded();
-
-            // ---| Manual ou Automatização |---
-            int opcao_inicial = -1;
-            Window.clear();
-    
-            while(end_program == false) {
-                try{
-                    opcao_inicial = Menu.menuInicial(scanner);
-                }
-                catch (InputMismatchException e) { // Não foi inscrito um int
-                    System.out.println(e.getMessage());
-                    opcao_inicial = -1;
-                }  
-
-                switch (opcao_inicial) {
-                    case 1: // Automatizar a simulação
-                        end_program = true;
-                        controllerAutomatizacao(scanner, model, file_auto);
-                        break;
-                    case 2: // Menu para o utilizador
-                        end_program = true;
-                        controllerUtilizador(scanner, model);
-                        break;
-                    case 3: // Guardar o estado do programa
-                        saveProgram(model);
-                        break;
-                    default: // Sair do programa
-                        end_program = true;
-                }
-            }
-        }
-
-        scanner.close();
-        Window.finalText();
+        return leu_ficheiro;
     }
 
     // salvar o estado atual do programa
@@ -127,65 +167,35 @@ public class Controller extends Exception {
         Window.finalCarregarPrograma();
     }
 
-    // Corre um modelo e avança diretamente para o Menu de alterações
-    public static void runObject(Model model, String auto) throws InvalidDateException, DateAlreadyExistsException {
-        Scanner scanner = new Scanner(System.in);
+    public static boolean controllerAutomatizacao(Scanner scanner, Model model) {
         boolean end_program = false;
 
-        // ---| Manual ou Automatização |---
-        int opcao_inicial = -1;
+        // ---| Automatização |---
+        String auto;
         Window.clear();
 
         while(end_program == false) {
 
-            try{
-                opcao_inicial = Menu.menuInicial(scanner);
+            auto = Menu.menuAuto(scanner);
+            try { 
+                Window.parsingAdvanced();
+                Parser.parseAdvanced(model, auto);
+                Window.parsingConcluded();
+                end_program = true;
             }
-            catch (InputMismatchException e) { // Não foi inscrito um int
-                System.out.println(e.getMessage());
-                opcao_inicial = -1;
-            } 
-
-            switch (opcao_inicial) {
-                case 1: // Automatizar a simulação
-                    try { 
-                        controllerAutomatizacao(scanner, model, auto);
-                    }
-                    catch (FileNotFoundException e) {
-                        System.out.println("File not " + auto + " found");
-                    }
-                    break;
-                case 2: // Menu para o utilizador
-                    controllerUtilizador(scanner, model);
-                    break;
-                case 3: // Guardar o estado do programa
-                    saveProgram(model);
-                    break;
-                default: // Sair do programa
-                    end_program = true;
+            catch (FileNotFoundException e) {
+                System.out.println("File not " + auto + " found");
+                continue;
             }
         }
-        scanner.close();
-        Window.finalText();
+
+        return end_program;
     }
 
-    public static void controllerAutomatizacao(Scanner scanner, Model model, String file_auto) throws FileNotFoundException {
-        Window.parsingAdvanced();
-        Parser.parseAdvanced(model, file_auto);
-        Window.parsingConcluded();
-
-        try {
-            controllerUtilizador(scanner, model);
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public static void controllerUtilizador(Scanner scanner, Model model) throws InvalidDateException, DateAlreadyExistsException {
+    public static void controllerUtilizador(Scanner scanner, Model model, Boolean tempo) throws InvalidDateException, DateAlreadyExistsException {
         int opcao_utilizador = -1;
         boolean end_program = false;
-        boolean avancou_tempo = false; // indica se o utilizador já avançou no tempo pelo menos uma vez
+        boolean avancou_tempo = tempo; // indica se o utilizador já avançou no tempo pelo menos uma vez
                                        // caso tenha, é disponibilizado as opoções de ver as faturas e as estatísticas
         while(end_program == false) {
             opcao_utilizador = Menu.menuUtilizadorManual(scanner, avancou_tempo);
@@ -381,7 +391,14 @@ public class Controller extends Exception {
         while(true) {
             try {
                 location = Menu.menuLocation(scanner);
-                model.addLocationToHouse(location, nif_casa);
+                if (location.equals("0")) {
+                    List<String> l = model.printLocations(nif_casa);
+                    System.out.println(l);
+                }
+                else {
+                    model.addLocationToHouse(location, nif_casa);
+                    break;
+                }
             }
             catch (LocationAlreadyExists e) {
                 System.out.println(e.getMessage());
@@ -390,7 +407,6 @@ public class Controller extends Exception {
             catch (Exception e) { 
                 continue;
             }
-            break;
         }
     }
 
@@ -415,11 +431,18 @@ public class Controller extends Exception {
         while(true) {
             try {
                 location = Menu.menuLocation(scanner);
+                if (location.equals("0")) {
+                    List<String> l = model.printLocations(nif_casa);
+                    System.out.println(l);
+                }
+                else {
+                    model.addLocationToHouse(location, nif_casa);
+                    break;
+                }
             }
             catch (Exception e) { 
                 continue;
             }
-            break;
         }
 
         int opcao_utilizador = -1;
@@ -478,10 +501,10 @@ public class Controller extends Exception {
                 case 2: // Ligar/Desligar 1 dispositivo
                     controllerDeviceMode(scanner, model);
                     break;
-                case 3: // Ligar TODOS os dispositivos de uma casa
+                case 3: // Ligar TODOS os dispositivos de uma divisão da casa
                     controllerTurnAllDevice(scanner, model, 1);
                     break;
-                case 4: // Desligar TODOS os dispositivos de uma casa
+                case 4: // Desligar TODOS os dispositivos de uma divisão da casa
                     controllerTurnAllDevice(scanner, model, 0);
                     break;
                 case 5: // Mudar fórmula de um fornecedor
@@ -504,6 +527,7 @@ public class Controller extends Exception {
                 continue;
             }
             catch (Exception e) {
+                System.out.println(e.getMessage());
                 continue;
             }
             break;
@@ -515,12 +539,8 @@ public class Controller extends Exception {
             if (model.hasFornecedor(fornecedor)) break;
         }
 
-        try {
-            model.changeSupplierHouse(fornecedor, nif_casa);
-        }
-        catch(Exception e) {
-            System.out.println(e.getMessage());
-        }
+        Command comando = new Command(LocalDate.parse("1998-01-27"), "changeSupplier", nif_casa, fornecedor);
+        model.addComandBasic(comando);
     }
 
     public static void controllerChangeFormula(Scanner scanner, Model model) {
@@ -530,37 +550,34 @@ public class Controller extends Exception {
             fornecedor = Menu.menuEscolherFornecedor(scanner, model);
             if (model.hasFornecedor(fornecedor)) break;
         }
-        int formula;
-        FormulaConsumo fc = null;
-        formula = Menu.menuFormula(scanner);
-        switch (formula) {
-            case 1:
-                Formula1 f1 = new Formula1();
-                fc = f1;
-                break;
-            case 2:
-                Formula2 f2 = new Formula2();
-                fc = f2;   
-                break;         
-            case 3:
-                Formula3 f3 = new Formula3(); 
-                fc = f3;   
-                break;      
-            case 4:
-                Formula4 f4 = new Formula4();   
-                fc = f4;   
-                break;         
-            case 5:
-                Formula5 f5 = new Formula5();
-                fc = f5;  
-                break;            
-            case 6:
-                Formula6 f6 = new Formula6();
-                fc = f6;
-                break;
+        int formula = -1;
+        String fc = null;
+        while(formula < 1 || formula > 6 ) {
+            formula = Menu.menuFormula(scanner);
+            switch (formula) {
+                case 1:
+                    fc = "Formula1";
+                    break;
+                case 2:
+                    fc = "Formula2";  
+                    break;         
+                case 3:
+                    fc = "Formula3";  
+                    break;      
+                case 4:
+                    fc = "Formula4";   
+                    break;         
+                case 5:
+                    fc = "Formula5"; 
+                    break;            
+                case 6:
+                    fc = "Formula6";
+                    break;
+            }            
         }
 
-        if (fc != null) model.changeFormula(fornecedor, fc);
+        Command comando = new Command(LocalDate.parse("1998-01-27"), "changeFormula", fornecedor, fc);
+        model.addComandBasic(comando);
     }
 
     public static void controllerTempo(Scanner scanner, Model model) {
@@ -575,6 +592,14 @@ public class Controller extends Exception {
                 continue;
             }
             catch (DateAlreadyExistsException e) {
+                System.out.println(e.getMessage());
+                continue;
+            }
+            catch (LocationDoesntExist e) {
+                System.out.println(e.getMessage());
+                continue;
+            }
+            catch (DeviceDoesntExists e) {
                 System.out.println(e.getMessage());
                 continue;
             }
@@ -598,6 +623,7 @@ public class Controller extends Exception {
                 continue;
             }
             catch (Exception e) {
+                System.out.println(e.getMessage());
                 continue;
             }
             break;
@@ -606,15 +632,41 @@ public class Controller extends Exception {
         String id_device;
         while(true) {
             try {
-                id_device = Menu.menuDevice(scanner);
+                id_device = Integer.toString(Menu.menuDispositivo(scanner));
+                if (id_device.equals("0")) {
+                    System.out.println(model.printDevices(nif_casa));
+                    continue;
+                }
             }
             catch (Exception e) { 
+                System.out.println(e.getMessage());
                 continue;
             }
             break;
         }
 
-        model.turnOpossite(model.getFromDate(), nif_casa, id_device);
+        int int_mode = -1;
+        while(int_mode != 1 || int_mode != 2) {
+            try {
+                int_mode = Menu.menuMode(scanner);
+            }
+            catch (Exception e) { 
+                System.out.println(e.getMessage());
+                continue;
+            }
+            break;
+        }
+
+        String mode = null;
+        switch (int_mode) {
+            case 1:
+                mode = "ON";
+            case 2:
+                mode = "OFF";
+        }
+
+        Command comando = new Command(LocalDate.parse("1998-01-27"), "setMode", nif_casa, id_device, mode);
+        model.addComandBasic(comando);
     }
 
     public static void controllerTurnAllDevice(Scanner scanner, Model model, int mode) {
@@ -624,28 +676,51 @@ public class Controller extends Exception {
             try {
                 NIF = Menu.menuCasa(scanner, model, 0);
             }
-            catch (HouseDoesntExists e) {
+            catch (HouseAlreadyExists | HouseDoesntExists e) {
                 System.out.println(e.getMessage());
-                continue;
-            }
-            catch (Exception e) {
                 continue;
             }
             break;
         }
+
+        String location;
+        while(true) {
+            try {
+                location = Menu.menuLocation(scanner);
+                if (location.equals("0")) {
+                    List<String> l = model.printLocations(NIF);
+                    System.out.println(l);
+                }
+                else {
+                    model.addLocationToHouse(location, NIF);
+                    break;
+                }
+            }
+            catch (LocationAlreadyExists e) {
+                System.out.println(e.getMessage());
+                continue;
+            }
+        }
+
+        Command comando = null;
+
         switch (mode) {
             case 1: // turnON
-                model.setAllDeviceON(NIF);
+                comando = new Command(LocalDate.parse("1998-01-27"), "setModeLocation", NIF, location, "ON");
                 break;
             case 0: // turnOFF
-                model.setAllDeviceOFF(NIF);
+                comando = new Command(LocalDate.parse("1998-01-27"), "setModeLocation", NIF, location, "OFF");
                 break;
         }
+
+        model.addComandBasic(comando);
     }
 
     public static void controllerEstatisticas(Scanner scanner, Model model) {
         int opcao_utilizador = -1;
         boolean end_program = false;
+
+        Window.clear();
 
         while(end_program == false) {
             opcao_utilizador = Menu.menuEstatisticas(scanner);

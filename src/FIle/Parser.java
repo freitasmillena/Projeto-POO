@@ -165,7 +165,7 @@ public class Parser {
                     try {
                         model.setModeAdvanced(linhaPartida[2], linhaPartida[3], mode, date);
                     }
-                    catch (InvalidDateException | DateAlreadyExistsException e) {
+                    catch (DeviceDoesntExists | InvalidDateException | DateAlreadyExistsException e) {
                         System.out.println(e.getMessage());
                     }
                     break;
@@ -181,7 +181,7 @@ public class Parser {
                     catch (DateAlreadyExistsException | InvalidDateException e) {
                         System.out.println(e.getMessage());
                     }
-                    catch (Exception e){
+                    catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
                     break;

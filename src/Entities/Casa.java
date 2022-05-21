@@ -1,6 +1,7 @@
 package Entities;
 
 import Entities.Exceptions.DateAlreadyExistsException;
+import Entities.Exceptions.DeviceDoesntExists;
 import Entities.Exceptions.LocationAlreadyExists;
 import Entities.Exceptions.LocationDoesntExist;
 
@@ -143,8 +144,13 @@ public class Casa implements Serializable {
     }
 
     //Mudar o modo de um dispositivo "s"
-    public void setMode(String s, int mode, LocalDate fromDate) throws DateAlreadyExistsException {
-        this.devices.get(s).addLog(fromDate, mode);
+    public void setMode(String s, int mode, LocalDate fromDate) throws DateAlreadyExistsException, DeviceDoesntExists {
+        if (!this.devices.containsKey(s)) {
+            throw new DeviceDoesntExists("Este dispositivo não existe!");
+        }
+        if(this.devices.get(s).lastRecentMode() != mode) {
+            this.devices.get(s).addLog(fromDate, mode);
+        }
     }
 
     //Mudar o modo de todos os dispositivos da casa
@@ -165,7 +171,9 @@ public class Casa implements Serializable {
             throw new LocationDoesntExist("Esta divisão: " + location + " não existe.");
         }
         for(String devices : this.locations.get(location)){
-            this.devices.get(devices).addLog(fromDate, mode);
+            if(this.devices.get(devices).lastRecentMode() != mode) {
+                this.devices.get(devices).addLog(fromDate, mode);
+            }
         }
     }
 
@@ -226,27 +234,27 @@ public class Casa implements Serializable {
         return nDevices;
     }
 
-    public void printLocations(){
+    public List<String> printLocations(){
+        List<String> list = new ArrayList<>();
         for(String location : this.locations.keySet()){
-            System.out.println(location);
+            list.add(location);
         }
+        return list;
     }
 
-    public void printDevicesFromLocation(String location){
+    public List<String> printDevicesFromLocation(String location){
+        List<String> list = new ArrayList<>();
         for(String sd : this.locations.get(location)){
-            System.out.println(sd);
+            list.add(sd);
         }
-
+        return list;
     }
 
-    public void printLogsfromDevice(String id){
-        SmartDevice sd = this.devices.get(id);
-        sd.printLogs();
-    }
-
-    public void printAllDevicesIDs(){
+    public List<String> printAllDevicesIDs(){
+        List<String> list = new ArrayList<>();
         for(String id : this.devices.keySet()){
-            System.out.println(id);
+            list.add(id);
         }
+        return list;
     }
 }

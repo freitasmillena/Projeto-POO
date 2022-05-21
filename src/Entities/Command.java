@@ -23,7 +23,7 @@ public class Command {
         this.name = name;
         this.command1 = command1;
         this.command2 = command2;
-        this.command2 = command3;
+        this.command3 = command3;
     }
 
     //Construtor pra nos casos de mudar de fornecedor e fornecedor mudar de formula que só tem 2 comandos
@@ -32,7 +32,7 @@ public class Command {
         this.name = name;
         this.command1 = command1;
         this.command2 = command2;
-        this.command2 = "";
+        this.command3 = "";
     }
 
     //Construtor de cópia
