@@ -293,7 +293,7 @@ public class Model implements Serializable {
                 .append(" \n")
                 .append("Fornecedor: ").append(result.getSupplier())
                 .append(" \n")
-                .append("Custo total: ").append(String.format("%,.2f",cost)).append(" \n");
+                .append("Custo total: ").append(String.format("%,.2f",cost)).append(" € \n");
 
 
 
@@ -318,7 +318,7 @@ public class Model implements Serializable {
             }
         }
 
-        return result.toString().concat("Quantidade: " + n);
+        return result.toString().concat("Quantidade de Faturas: " + n);
     }
 
     //listar as facturas emitidas por um comercializador
@@ -346,7 +346,7 @@ public class Model implements Serializable {
         List<String> result = new ArrayList<>();
         int count = 1;
         for(Invoice in : invoices){
-            result.add(count + "º   " + "Dono: " + in.getOwner() + " NIF: " + in.getNif() + " Total: " + in.getTotalConsumption());
+            result.add(count + "º   " + "Dono: " + in.getOwner() + " NIF: " + in.getNif() + " Total Consumo energético: " + in.getTotalConsumption());
             count++;
         }
 
@@ -406,7 +406,7 @@ public class Model implements Serializable {
     public void setAllDeviceON (String nif_casa) {
         for (Casa casa : this.casas.values()) {
             try {
-                casa.setAllMode(1, this.fromDate);
+                casa.setAllMode(1, this.fromDate.plusDays(1));
             }
             catch (DateAlreadyExistsException e) {
                 System.out.println(e.getMessage());
@@ -418,7 +418,7 @@ public class Model implements Serializable {
     public void setAllDeviceOFF (String nif_casa) {
         for (Casa casa : this.casas.values()) {
             try {
-                casa.setAllMode(0, this.fromDate);
+                casa.setAllMode(0, this.fromDate.plusDays(1));
             }
             catch (DateAlreadyExistsException e) {
                 System.out.println(e.getMessage());
@@ -429,53 +429,10 @@ public class Model implements Serializable {
     // Inverter o Modo (ON / OFF) de um dispositivo
     public void turnOpossite(LocalDate fromDate, String nif_casa, String id_device) {
         try {
-            this.casas.get(nif_casa).turnOpossiteDeviceLocation(fromDate, id_device);
+            this.casas.get(nif_casa).turnOpossiteDeviceLocation(fromDate.plusDays(1), id_device);
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /* Modo avançado */
-    /*
-    * Enquanto há linhas no ficheiro lê
-    * Se for setMode -> executa
-    * Se for changeSupplier ou changeFormula -> cria command e adiciona à lista de commands
-    * Se for generateInvoice -> chama função moveForward
-    *
-    * Modelo ficheiro:
-    * ----------------
-    * data pedido comandos
-    * 2022-05-13 setMode casa1 d1 ON
-    * 2022-05-13 setMode casa2 d2 OFF
-    * 2022-05-14 changeSupplier EDP Galp
-    * 2022-05-14 changeFormula EDP Formula1
-    * 2022-05-15 generateInvoice  (este gera fatura com fromDate do model e toDate = 2022-05-15)
-    *
-    *
-    * */
-
-    /* Modo básico */
-    /*
-    Comando é criado com data model.getFromDate pq os comandos de setMode precisam desta data para os logs
-    No modo avançado, n é criado comando para setMode, é feito logo em seguida.
-
-     */
 }

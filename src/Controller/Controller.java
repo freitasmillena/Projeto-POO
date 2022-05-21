@@ -530,40 +530,34 @@ public class Controller extends Exception {
             fornecedor = Menu.menuEscolherFornecedor(scanner, model);
             if (model.hasFornecedor(fornecedor)) break;
         }
-        boolean end_program = false;
         int formula;
         FormulaConsumo fc = null;
-        while(true) {
-            formula = Menu.menuFormula(scanner);
-            switch (formula) {
-                case 1:
-                    Formula1 f1 = new Formula1();
-                    fc = f1;
-                    break;
-                case 2:
-                    Formula2 f2 = new Formula2();
-                    fc = f2;   
-                    break;         
-                case 3:
-                    Formula3 f3 = new Formula3(); 
-                    fc = f3;   
-                    break;      
-                case 4:
-                    Formula4 f4 = new Formula4();   
-                    fc = f4;   
-                    break;         
-                case 5:
-                    Formula5 f5 = new Formula5();
-                    fc = f5;  
-                    break;            
-                case 6:
-                    Formula6 f6 = new Formula6();
-                    fc = f6;
-                    break;
-                default:
-                    end_program = true;
-            }
-            if (end_program == true) break;
+        formula = Menu.menuFormula(scanner);
+        switch (formula) {
+            case 1:
+                Formula1 f1 = new Formula1();
+                fc = f1;
+                break;
+            case 2:
+                Formula2 f2 = new Formula2();
+                fc = f2;   
+                break;         
+            case 3:
+                Formula3 f3 = new Formula3(); 
+                fc = f3;   
+                break;      
+            case 4:
+                Formula4 f4 = new Formula4();   
+                fc = f4;   
+                break;         
+            case 5:
+                Formula5 f5 = new Formula5();
+                fc = f5;  
+                break;            
+            case 6:
+                Formula6 f6 = new Formula6();
+                fc = f6;
+                break;
         }
 
         if (fc != null) model.changeFormula(fornecedor, fc);
