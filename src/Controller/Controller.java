@@ -284,26 +284,32 @@ public class Controller extends Exception {
                     case 1:
                         Formula1 f1 = new Formula1();
                         fornecedor.setFormulaConsumo(f1);
+                        cont = true;
                         break;
                     case 2:
                         Formula2 f2 = new Formula2();
-                        fornecedor.setFormulaConsumo(f2);     
+                        fornecedor.setFormulaConsumo(f2);  
+                        cont = true;   
                         break;       
                     case 3:
                         Formula3 f3 = new Formula3();
-                        fornecedor.setFormulaConsumo(f3);   
+                        fornecedor.setFormulaConsumo(f3); 
+                        cont = true;  
                         break;         
                     case 4:
                         Formula4 f4 = new Formula4();
                         fornecedor.setFormulaConsumo(f4); 
+                        cont = true;
                         break;               
                     case 5:
                         Formula5 f5 = new Formula5();
                         fornecedor.setFormulaConsumo(f5);  
+                        cont = true;
                         break;              
                     case 6:
                         Formula6 f6 = new Formula6();
                         fornecedor.setFormulaConsumo(f6);
+                        cont = true;
                         break;
                     default:
                         cont = true;                
@@ -436,7 +442,6 @@ public class Controller extends Exception {
                     System.out.println(l);
                 }
                 else {
-                    model.addLocationToHouse(location, nif_casa);
                     break;
                 }
             }
@@ -456,6 +461,7 @@ public class Controller extends Exception {
                     try {    
                         SmartBulb sb = new SmartBulb();
                         model.addDeviceToHouse(nif_casa, location, sb);
+                        end_program = true;
                     }
                     catch (Exception e) {
                         System.out.println(e.getMessage());
@@ -465,6 +471,7 @@ public class Controller extends Exception {
                     try {    
                         SmartSpeaker ss = new SmartSpeaker();
                         model.addDeviceToHouse(nif_casa, location, ss);
+                        end_program = true;
                     }
                     catch (Exception e) {
                         System.out.println(e.getMessage());
@@ -474,6 +481,7 @@ public class Controller extends Exception {
                     try {    
                         SmartCamera sc = new SmartCamera();
                         model.addDeviceToHouse(nif_casa, location, sc);
+                        end_program = true;
                     }
                     catch (Exception e) {
                         System.out.println(e.getMessage());
@@ -692,11 +700,10 @@ public class Controller extends Exception {
                     System.out.println(l);
                 }
                 else {
-                    model.addLocationToHouse(location, NIF);
                     break;
                 }
             }
-            catch (LocationAlreadyExists e) {
+            catch (Exception e) {
                 System.out.println(e.getMessage());
                 continue;
             }
@@ -746,8 +753,6 @@ public class Controller extends Exception {
 
     public static void controllerEstatistica3(Scanner scanner, Model model) {
         Window.resultsEstatisticas();
-        System.out.println("----| 3. Listar TODAS as faturas emitidas por um comercializador |----");
-        System.out.println("");
         String name_supplier;
 
         while(true){
